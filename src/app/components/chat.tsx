@@ -44,22 +44,23 @@ export default function Chat({ previousChats }: ChatClientProps) {
         <h1 className="text-xl font-bold"> Chat App</h1>
       </div>
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`flex ${
-              msg.senderId === mySenderId ? "justify-end" : "justify-start"
-            }`}
-          >
+        {messages &&
+          messages.map((msg) => (
             <div
-              className={`${
-                msg.senderId === mySenderId ? "bg-blue-500" : "bg-green-500"
-              } text-white p-3 rounded-lg max-w-xs`}
+              key={msg.id}
+              className={`flex ${
+                msg.senderId === mySenderId ? "justify-end" : "justify-start"
+              }`}
             >
-              {msg.text}
+              <div
+                className={`${
+                  msg.senderId === mySenderId ? "bg-blue-500" : "bg-green-500"
+                } text-white p-3 rounded-lg max-w-xs`}
+              >
+                {msg.text}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
         <div ref={messagesEndRef} />
       </div>
       <div className="p-4 bg-white ">
