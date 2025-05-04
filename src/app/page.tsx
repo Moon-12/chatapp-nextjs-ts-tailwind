@@ -1,18 +1,22 @@
 import Chat from "./components/chat";
+import ModalPopup from "./components/modal";
 
 async function fetchChats() {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/chat`,
+      `${process.env.API_BASE_URL}/getAllPreviousMessages`,
       {
         cache: "no-store", // Ensure fresh data
       }
     );
-    const data = await response.json();
-    if (response.ok && "content" in data) {
-      return data.content;
+    const responseData = await response.json();
+
+    if (response.ok) {
+      return responseData.data;
     } else {
-      throw new Error("message" in data ? data.message : "Unknown error");
+      throw new Error(
+        "message" in responseData ? responseData.message : response.status
+      );
     }
   } catch (err) {
     console.error("Failed to fetch content:", err);
@@ -21,5 +25,12 @@ async function fetchChats() {
 }
 export default async function Page() {
   const previousChats = await fetchChats();
-  return <Chat previousChats={previousChats} />;
+
+  return (
+    <>
+      {" "}
+      <ModalPopup />
+      <Chat previousChats={previousChats} />
+    </>
+  );
 }
