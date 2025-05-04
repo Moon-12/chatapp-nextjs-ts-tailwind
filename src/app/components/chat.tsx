@@ -1,19 +1,13 @@
 "use client";
 
-import { Timestamp } from "next/dist/server/lib/cache-handlers/types";
 import { useState, useEffect, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/redux/store/store";
+import { addMessage } from "@/redux/slice/chat/chatSlice";
 
-interface Message {
-  id: number;
-  message: string;
-  createdBy: string;
-  createdAt: Timestamp;
-}
-interface ChatClientProps {
-  previousChats: Message[];
-}
-export default function Chat({ previousChats }: ChatClientProps) {
-  const [messages, setMessages] = useState<Message[]>(previousChats);
+export default function Chat() {
+  const dispatch = useDispatch();
+  const messages = useSelector((state: RootState) => state.chat.chatData);
   const [input, setInput] = useState<string>("");
   const [mycreatedBy, setMycreatedBy] = useState<string>("Ashwi");
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -32,15 +26,12 @@ export default function Chat({ previousChats }: ChatClientProps) {
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
     if (input.trim()) {
-      setMessages([
-        ...messages,
-        {
-          id: 0,
-          message: input,
-          createdAt: Date.now(),
-          createdBy: mycreatedBy,
-        },
-      ]);
+      const newMessage = {
+        message: input,
+        createdBy: mycreatedBy,
+        createdAt: Date.now(),
+      };
+      dispatch(addMessage(newMessage));
       setInput("");
     }
   };

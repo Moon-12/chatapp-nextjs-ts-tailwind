@@ -1,4 +1,5 @@
 import Chat from "./components/chat";
+import DataComponent from "./components/InitialDataLoader";
 import ModalPopup from "./components/modal";
 
 async function fetchChats() {
@@ -29,8 +30,9 @@ export default async function Page() {
   return (
     <>
       {" "}
+      <DataComponent initialData={previousChats} />
       <ModalPopup />
-      <Chat previousChats={previousChats} />
+      <Chat />
     </>
   );
 }
