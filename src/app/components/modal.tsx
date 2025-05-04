@@ -24,6 +24,7 @@ const ModalPopup: React.FC = () => {
 
   return (
     <>
+      <Chat myCreatedBy={inputValue} />
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent backdrop-blur-sm">
           <div className="bg-white bg-opacity-10 backdrop-blur-md rounded-lg shadow-xl max-w-md w-full mx-4 p-6">

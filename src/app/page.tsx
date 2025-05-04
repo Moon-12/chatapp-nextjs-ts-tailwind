@@ -32,7 +32,6 @@ export default async function Page() {
       {" "}
       <DataComponent initialData={previousChats} />
       <ModalPopup />
-      <Chat />
     </>
   );
 }
