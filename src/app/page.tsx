@@ -1,4 +1,5 @@
 import Chat from "./components/chat";
+import ModalPopup from "./components/modal";
 
 async function fetchChats() {
   try {
@@ -8,12 +9,14 @@ async function fetchChats() {
         cache: "no-store", // Ensure fresh data
       }
     );
-    const data = await response.json();
-    console.log(data);
-    if (response.ok && "content" in data) {
-      return data.content;
+    const responseData = await response.json();
+
+    if (response.ok) {
+      return responseData.data;
     } else {
-      throw new Error("message" in data ? data.message : response.status);
+      throw new Error(
+        "message" in responseData ? responseData.message : response.status
+      );
     }
   } catch (err) {
     console.error("Failed to fetch content:", err);
@@ -22,6 +25,12 @@ async function fetchChats() {
 }
 export default async function Page() {
   const previousChats = await fetchChats();
-  console.log(previousChats);
-  return <Chat previousChats={previousChats} />;
+
+  return (
+    <>
+      {" "}
+      <ModalPopup />
+      <Chat previousChats={previousChats} />
+    </>
+  );
 }

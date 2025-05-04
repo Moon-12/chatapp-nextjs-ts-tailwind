@@ -1,11 +1,13 @@
 "use client";
 
+import { Timestamp } from "next/dist/server/lib/cache-handlers/types";
 import { useState, useEffect, useRef } from "react";
 
 interface Message {
   id: number;
-  text: string;
-  senderId: string;
+  message: string;
+  createdBy: string;
+  createdAt: Timestamp;
 }
 interface ChatClientProps {
   previousChats: Message[];
@@ -13,7 +15,7 @@ interface ChatClientProps {
 export default function Chat({ previousChats }: ChatClientProps) {
   const [messages, setMessages] = useState<Message[]>(previousChats);
   const [input, setInput] = useState<string>("");
-  const [mySenderId, setMySenderId] = useState<string>("Ashwi");
+  const [mycreatedBy, setMycreatedBy] = useState<string>("Ashwi");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // onInit(){
@@ -32,7 +34,12 @@ export default function Chat({ previousChats }: ChatClientProps) {
     if (input.trim()) {
       setMessages([
         ...messages,
-        { text: input, id: Date.now(), senderId: mySenderId },
+        {
+          id: 0,
+          message: input,
+          createdAt: Date.now(),
+          createdBy: mycreatedBy,
+        },
       ]);
       setInput("");
     }
@@ -49,15 +56,15 @@ export default function Chat({ previousChats }: ChatClientProps) {
             <div
               key={msg.id}
               className={`flex ${
-                msg.senderId === mySenderId ? "justify-end" : "justify-start"
+                msg.createdBy === mycreatedBy ? "justify-end" : "justify-start"
               }`}
             >
               <div
                 className={`${
-                  msg.senderId === mySenderId ? "bg-blue-500" : "bg-green-500"
+                  msg.createdBy === mycreatedBy ? "bg-blue-500" : "bg-green-500"
                 } text-white p-3 rounded-lg max-w-xs`}
               >
-                {msg.text}
+                {msg.message}
               </div>
             </div>
           ))}
