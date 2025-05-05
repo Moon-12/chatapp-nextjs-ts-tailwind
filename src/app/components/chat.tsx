@@ -2,11 +2,11 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/redux/store/store";
-import { addMessage } from "@/redux/slice/chat/chatSlice";
+import { AppDispatch, RootState } from "@/redux/store/store";
+import { sendMessage } from "@/redux/slice/chat/chatSlice";
 
 export default function Chat({ myCreatedBy }: { myCreatedBy: string }) {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const messages = useSelector((state: RootState) => state.chat.chatData);
   const [input, setInput] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -27,7 +27,7 @@ export default function Chat({ myCreatedBy }: { myCreatedBy: string }) {
         createdBy: myCreatedBy,
         createdAt: Date.now(),
       };
-      dispatch(addMessage(newMessage));
+      dispatch(sendMessage(newMessage));
       setInput("");
     }
   };

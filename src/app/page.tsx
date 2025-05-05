@@ -5,7 +5,7 @@ import ModalPopup from "./components/modal";
 async function fetchChats() {
   try {
     const response = await fetch(
-      `${process.env.API_BASE_URL}/getAllPreviousMessages`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/getAllPreviousMessages`,
       {
         cache: "no-store", // Ensure fresh data
       }
