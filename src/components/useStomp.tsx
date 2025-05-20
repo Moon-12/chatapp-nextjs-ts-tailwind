@@ -18,7 +18,6 @@ export const useStomp = () => {
     stompClient.activate();
 
     stompClient.onConnect = () => {
-      console.log("connected");
       setStompClient(stompClient);
       stompClient.subscribe("/topic/chat", (message) => {
         dispatch(setNewChat(JSON.parse(message.body)));
@@ -32,8 +31,6 @@ export const useStomp = () => {
   }, []);
 
   const sendMessage = (message: Message) => {
-    console.log("mess", message);
-    console.log("stomp", stompClient);
     stompClient?.publish({
       destination: "/app/postMessage",
       body: JSON.stringify(message),
