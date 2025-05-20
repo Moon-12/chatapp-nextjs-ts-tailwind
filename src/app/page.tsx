@@ -20,8 +20,7 @@ async function fetchChats() {
       );
     }
   } catch (err) {
-    console.error("Failed to fetch content:", err);
-    return ""; // Fallback content
+    throw err;
   }
 }
 export default async function Page() {
