@@ -1,15 +1,17 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/redux/store/store";
-import { sendMessage } from "@/redux/slice/chat/chatSlice";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store/store";
+import { useStomp } from "./useStomp";
 
 export default function Chat({ myCreatedBy }: { myCreatedBy: string }) {
-  const dispatch = useDispatch<AppDispatch>();
-  const messages = useSelector((state: RootState) => state.chat.chatData);
+  const initialMessages = useSelector(
+    (state: RootState) => state.chat.chatData
+  );
   const [input, setInput] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { sendMessage } = useStomp();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -17,7 +19,7 @@ export default function Chat({ myCreatedBy }: { myCreatedBy: string }) {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [initialMessages]);
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +29,7 @@ export default function Chat({ myCreatedBy }: { myCreatedBy: string }) {
         createdBy: myCreatedBy,
         createdAt: Date.now(),
       };
-      dispatch(sendMessage(newMessage));
+      sendMessage(newMessage);
       setInput("");
     }
   };
@@ -45,8 +47,8 @@ export default function Chat({ myCreatedBy }: { myCreatedBy: string }) {
         <h1 className="text-xl font-bold">Chat App</h1>
       </div>
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages &&
-          messages.map((msg, index) => (
+        {initialMessages &&
+          initialMessages.map((msg, index) => (
             <div
               key={index}
               className={`flex flex-col ${

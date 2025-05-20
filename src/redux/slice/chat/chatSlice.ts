@@ -9,16 +9,18 @@ export interface Message {
 }
 
 export interface ChatState {
-  chatData: Message[] | null;
+  chatData: Message[];
   loading: boolean;
   error: string | null;
 }
 
 const initialState: ChatState = {
-  chatData: null,
+  chatData: [],
   loading: false,
   error: null,
 };
+
+//can be used with http (if not using socket)
 
 export const sendMessage = createAsyncThunk(
   "chat/postMessage",
@@ -54,6 +56,9 @@ export const chatSlice = createSlice({
     setPreviousChats: (state, action) => {
       state.chatData = action.payload;
     },
+    setNewChat: (state, action) => {
+      state.chatData.push(action.payload);
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -80,6 +85,6 @@ export const chatSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { setPreviousChats } = chatSlice.actions;
+export const { setPreviousChats, setNewChat } = chatSlice.actions;
 
 export default chatSlice.reducer;
