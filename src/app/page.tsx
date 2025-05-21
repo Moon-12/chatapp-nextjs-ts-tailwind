@@ -1,11 +1,11 @@
-import Chat from "./components/chat";
-import DataComponent from "./components/InitialDataLoader";
-import ModalPopup from "./components/modal";
+import Chat from "../components/chat";
+import DataComponent from "../components/InitialDataLoader";
+import ModalPopup from "../components/modal";
 
 async function fetchChats() {
   try {
     const response = await fetch(
-      `${process.env.API_BASE_URL}/getAllPreviousMessages`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/chat/getAllPreviousMessages`,
       {
         cache: "no-store", // Ensure fresh data
       }
@@ -20,8 +20,7 @@ async function fetchChats() {
       );
     }
   } catch (err) {
-    console.error("Failed to fetch content:", err);
-    return ""; // Fallback content
+    throw err;
   }
 }
 export default async function Page() {
@@ -32,7 +31,6 @@ export default async function Page() {
       {" "}
       <DataComponent initialData={previousChats} />
       <ModalPopup />
-      <Chat />
     </>
   );
 }
