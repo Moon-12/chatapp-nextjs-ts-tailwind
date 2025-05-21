@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import StoreProvider from "@/redux/store/StoreProvider";
+import { ToastContainer } from "react-toastify";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -17,6 +18,7 @@ export default function RootLayout({
       <body>
         {" "}
         <StoreProvider>{children} </StoreProvider>
+        <ToastContainer />
       </body>
     </html>
   );

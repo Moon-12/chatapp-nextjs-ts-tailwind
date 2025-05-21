@@ -6,7 +6,6 @@ const LoadingComponent = () => {
     display: "block",
     margin: "100px auto",
   };
-  console.log("heer");
   return (
     <ClipLoader
       color="#3b82f6"
