@@ -5,7 +5,7 @@ export async function login(password: string) {
   }
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/chat/login`,
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/login`,
     {
       method: "POST",
       headers: {

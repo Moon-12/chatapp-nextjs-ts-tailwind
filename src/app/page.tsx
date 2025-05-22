@@ -1,11 +1,10 @@
-import Chat from "../components/chat";
 import DataComponent from "../components/InitialDataLoader";
 import ModalPopup from "../components/modal";
 
 async function fetchChats() {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/chat/getAllPreviousMessages`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/getAllPreviousMessages`,
       {
         cache: "no-store", // Ensure fresh data
       }
