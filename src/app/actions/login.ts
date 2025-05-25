@@ -4,16 +4,14 @@ export async function login(password: string) {
     throw new Error("Password is required");
   }
 
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/login`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ password }),
-    }
-  );
+  const response = await fetch(`${process.env.API_BASE_URL}/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-auth-token": "testchatapp",
+    },
+    body: JSON.stringify({ password }),
+  });
 
   const responseData = await response.json();
   if (response.ok) {

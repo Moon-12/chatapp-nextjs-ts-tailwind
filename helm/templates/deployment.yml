@@ -27,9 +27,6 @@ spec:
             limits:
               cpu: "500m"
               memory: "512Mi"
-          env:
-            - name: NODE_ENV
-              value: "production"
           readinessProbe:
             httpGet:
               path: /
