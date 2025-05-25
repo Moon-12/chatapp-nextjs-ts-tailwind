@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nextjs-chat
+  namespace: twinkle-ns
+  labels:
+    app: nextjs-chat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nextjs-chat
+  template:
+    metadata:
+      labels:
+        app: nextjs-chat
+    spec:
+      containers:
+        - name: nextjs-chat
+          image: 192.168.0.147:30008/next-chat:v0.0.1
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 100
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 600
+          envFrom:
+            - configMapRef:
+                name: nextjs-chat-config
