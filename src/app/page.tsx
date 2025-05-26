@@ -8,7 +8,7 @@ async function fetchChats() {
       {
         cache: "no-store", // Ensure fresh data
         headers: {
-          "x-auth-token": "testchatapp",
+          "x-auth-token": process.env.SERVER_KEY || "",
         },
       }
     );
