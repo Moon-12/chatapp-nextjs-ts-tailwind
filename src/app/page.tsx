@@ -8,7 +8,7 @@ async function fetchChats() {
       {
         cache: "no-store", // Ensure fresh data
         headers: {
-          "x-auth-token": "testchatapp",
+          "x-auth-token": process.env.SERVER_KEY || "",
         },
       }
     );
@@ -31,7 +31,10 @@ export default async function Page() {
   return (
     <>
       {" "}
-      <DataComponent initialData={previousChats} />
+      <DataComponent
+        initialData={previousChats}
+        url={process.env.API_BASE_URL || ""}
+      />
       <ModalPopup />
     </>
   );

@@ -8,7 +8,7 @@ export async function login(password: string) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-auth-token": "testchatapp",
+      "x-auth-token": password,
     },
     body: JSON.stringify({ password }),
   });

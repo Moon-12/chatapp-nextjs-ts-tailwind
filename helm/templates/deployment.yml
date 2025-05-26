@@ -1,23 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nextjs-chat
+  name: {{ .Chart.Name }}-deployment
   namespace: twinkle-ns
   labels:
-    app: nextjs-chat
+    app: {{ .Chart.Name }}
+    project: twinkle-chat
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: nextjs-chat
+      app: {{ .Chart.Name }}
   template:
     metadata:
       labels:
-        app: nextjs-chat
+        app: {{ .Chart.Name }}
+        project: twinkle-chat
     spec:
       containers:
-        - name: nextjs-chat
-          image: 192.168.0.147:30008/next-chat:v0.0.1
+        - name: {{ .Chart.Name }}-container
+          image: 192.168.0.147:30008/{{ .Chart.Name }}:{{ .Chart.AppVersion }}
           ports:
             - containerPort: 3000
           resources:
@@ -29,16 +31,24 @@ spec:
               memory: "512Mi"
           readinessProbe:
             httpGet:
-              path: /
+              path: /chat-app
               port: 3000
             initialDelaySeconds: 30
-            periodSeconds: 100
+            periodSeconds: 600
           livenessProbe:
             httpGet:
-              path: /
+              path: /chat-app
               port: 3000
             initialDelaySeconds: 15
             periodSeconds: 600
-          envFrom:
-            - configMapRef:
-                name: nextjs-chat-config
+          env:
+          - name: SERVER_KEY
+            valueFrom:
+              configMapKeyRef:
+                name: chat-config-map
+                key: server_key
+          - name: API_BASE_URL
+            valueFrom:
+              configMapKeyRef:
+                name: chat-config-map
+                key: api_base_url
