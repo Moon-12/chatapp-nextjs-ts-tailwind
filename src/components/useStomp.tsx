@@ -10,7 +10,7 @@ export const useStomp = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     const socket = new SockJS(
-      `${process.env.NEXT_PUBLIC_URL_STOMP_CLIENT}/activeMessageListener`
+      `${sessionStorage.getItem("SOCKET_URL")}/activeMessageListener`
     );
     const stompClient = new Client({
       webSocketFactory: () => socket,

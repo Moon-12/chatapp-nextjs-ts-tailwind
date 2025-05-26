@@ -31,7 +31,10 @@ export default async function Page() {
   return (
     <>
       {" "}
-      <DataComponent initialData={previousChats} />
+      <DataComponent
+        initialData={previousChats}
+        url={process.env.URL_STOMP_CLIENT || ""}
+      />
       <ModalPopup />
     </>
   );
