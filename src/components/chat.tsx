@@ -43,7 +43,7 @@ export default function Chat({ myCreatedBy }: { myCreatedBy: string }) {
 
   return (
     <div className="flex flex-col h-screen max-w-md mx-auto bg-gray-100">
-      <div className="bg-green-600 text-white p-4 text-center">
+      <div className="bg-[#c9e5c0] text-white p-4 text-center">
         <h1 className="text-xl font-bold">Chat App</h1>
       </div>
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
