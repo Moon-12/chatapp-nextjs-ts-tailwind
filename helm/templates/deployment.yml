@@ -42,11 +42,13 @@ spec:
             initialDelaySeconds: 15
             periodSeconds: 600
           env:
-          - name: SERVER_KEY         # This will be the name of the environment variable
+          - name: SERVER_KEY
             valueFrom:
               configMapKeyRef:
-                name: chat-config-map             # Name of the ConfigMap
-                key: server_key            # Key in the ConfigMap whose value will be assigned
-          envFrom:
-            - configMapRef:
-                name: nextjs-chat-config
+                name: chat-config-map
+                key: server_key
+          - name: API_BASE_URL
+            valueFrom:
+              configMapKeyRef:
+                name: chat-config-map
+                key: api_base_url
