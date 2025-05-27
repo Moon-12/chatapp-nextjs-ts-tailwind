@@ -1,39 +1,14 @@
 import DataComponent from "../components/InitialDataLoader";
 import ModalPopup from "../components/modal";
 
-async function fetchChats() {
-  try {
-    const response = await fetch(
-      `${process.env.API_BASE_URL}/getAllPreviousMessages`,
-      {
-        cache: "no-store", // Ensure fresh data
-        headers: {
-          "x-auth-token": process.env.SERVER_KEY || "",
-        },
-      }
-    );
-    const responseData = await response.json();
-
-    if (response.ok) {
-      return responseData.data;
-    } else {
-      throw new Error(
-        "message" in responseData ? responseData.message : response.status
-      );
-    }
-  } catch (err) {
-    throw err;
-  }
-}
 export default async function Page() {
-  const previousChats = await fetchChats();
-
+  console.log("server key", process.env.SERVER_KEY);
   return (
     <>
       {" "}
       <DataComponent
-        initialData={previousChats}
         url={process.env.API_BASE_URL || ""}
+        serverKey={process.env.SERVER_KEY || ""}
       />
       <ModalPopup />
     </>

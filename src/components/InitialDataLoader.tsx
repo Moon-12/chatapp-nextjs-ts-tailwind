@@ -1,27 +1,17 @@
 "use client";
 
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { Message, setPreviousChats } from "@/redux/slice/chat/chatSlice";
 
 const InitialDataLoader = ({
-  initialData,
   url,
+  serverKey,
 }: {
-  initialData: Message[];
   url: string;
+  serverKey: string;
 }) => {
-  const dispatch = useDispatch();
-
   useEffect(() => {
-    sessionStorage.setItem("SOCKET_URL", url);
+    sessionStorage.setItem("API_BASE_URL", url);
   }, []);
-
-  useEffect(() => {
-    if (initialData) {
-      dispatch(setPreviousChats(initialData));
-    }
-  }, [dispatch, initialData]);
 
   return null;
 };

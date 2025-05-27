@@ -7,17 +7,21 @@ import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import Image from "next/image";
 import backgroundBlur from "../../assets/images/blurBackground.png";
+import { fetchPreviousChats } from "@/redux/slice/chat/chatSlice";
+import { useAppDispatch } from "@/redux/hooks";
 const ModalPopup: React.FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-
+  const [showChats, setShowChats] = useState<Boolean>(false);
+  const dispatch = useAppDispatch();
   // Show modal when component mounts
   useEffect(() => {
     setIsOpen(true);
   }, []);
 
   const handleSubmit = () => {
+    sessionStorage.setItem("SERVER_KEY", password);
     // Close modal handler
     login(password)
       .then((res) => {
@@ -25,10 +29,12 @@ const ModalPopup: React.FC = () => {
           //close modal
           setIsOpen(false);
           toast.success(res.message);
+          dispatch(fetchPreviousChats());
+          setShowChats(true);
         }
       })
       .catch((err) => {
-        toast.error(err.message);
+        toast.error(err.message || "Login Error");
       });
   };
 
@@ -39,15 +45,19 @@ const ModalPopup: React.FC = () => {
 
   return (
     <>
-      <div className="flex h-screen max-w-md mx-auto bg-gray-100">
-        <Image
-          src={backgroundBlur}
-          alt="Background"
-          sizes="100vw"
-          className="object-center"
-          priority
-        />
-      </div>
+      {showChats ? (
+        <Chat myCreatedBy={inputValue} />
+      ) : (
+        <div className="flex h-screen max-w-md mx-auto bg-gray-100">
+          <Image
+            src={backgroundBlur}
+            alt="Background"
+            sizes="100vw"
+            className="object-center"
+            priority
+          />
+        </div>
+      )}
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent ">
           <div className="bg-white bg-opacity-10 rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
