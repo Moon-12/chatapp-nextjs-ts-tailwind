@@ -2,7 +2,6 @@ import DataComponent from "../components/InitialDataLoader";
 import ModalPopup from "../components/modal";
 
 export default async function Page() {
-  console.log("server key", process.env.SERVER_KEY);
   return (
     <>
       {" "}

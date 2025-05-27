@@ -30,7 +30,6 @@ export const fetchAllChatGroups = createAsyncThunk<
         "x-auth-token": "testchatapp",
       },
     };
-    console.log(payload);
     const response = await fetch(
       `${sessionStorage.getItem("API_BASE_URL")}/getAllChatGroups`,
       payload
