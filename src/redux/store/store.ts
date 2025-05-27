@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import chatReducer from "../slice/chat/chatSlice";
+import chatGroupReducer from "../slice/chatGroup/chatGroupSlice";
 
 export const store = configureStore({
   reducer: {
     chat: chatReducer,
+    chatGroup: chatGroupReducer,
   },
 });
 
