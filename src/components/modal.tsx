@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Chat from "./chat";
 import { login } from "@/app/actions/login";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
@@ -10,6 +9,7 @@ import backgroundBlur from "../../assets/images/blurBackground.png";
 import { useAppDispatch } from "@/redux/hooks";
 import { fetchAllChatGroups } from "@/redux/slice/chatGroup/chatGroupSlice";
 import { useRouter } from "next/navigation";
+import { setLoggedInUser } from "@/redux/slice/user/userSlice";
 
 const ModalPopup: React.FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -33,6 +33,7 @@ const ModalPopup: React.FC = () => {
           setIsOpen(false);
           toast.success(res.message);
           dispatch(fetchAllChatGroups());
+          dispatch(setLoggedInUser(inputValue));
           router.push("/groups");
         }
       })

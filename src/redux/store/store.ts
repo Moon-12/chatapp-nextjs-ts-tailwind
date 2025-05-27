@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import chatReducer from "../slice/chat/chatSlice";
 import chatGroupReducer from "../slice/chatGroup/chatGroupSlice";
+import userReducer from "../slice/user/userSlice";
 import { persistStore, persistReducer } from "redux-persist";
 import storageSession from "redux-persist/lib/storage/session";
 import { combineReducers } from "redux";
@@ -8,6 +9,7 @@ import { combineReducers } from "redux";
 const rootReducer = combineReducers({
   chat: chatReducer,
   chatGroup: chatGroupReducer,
+  user: userReducer,
   // other reducers...
 });
 

@@ -7,6 +7,7 @@ export interface Message {
   message: string;
   createdBy: string;
   createdAt: Timestamp;
+  groupId: number;
 }
 
 export interface ChatState {
@@ -21,40 +22,43 @@ const initialState: ChatState = {
   error: null,
 };
 
-export const fetchPreviousChats = createAsyncThunk<
+export const fetchPreviousChatsByGroupId = createAsyncThunk<
   Message[], // return type
-  void, // argument to the thunk (we're not passing any)
+  number, // argument to the thunk (we're not passing any)
   { rejectValue: string } // reject type
->("chatSlice/fetchPreviousChats", async (_, { rejectWithValue }) => {
-  // console.log("token" + sessionStorage.getItem("SERVER_KEY"));
-  try {
-    const payload = {
-      headers: {
-        "Content-Type": "application/json",
-        "x-auth-token": sessionStorage.getItem("SERVER_KEY") || "",
-      },
-    };
-    console.log(payload);
-    const response = await fetch(
-      `${sessionStorage.getItem("API_BASE_URL")}/getAllPreviousMessages/1`,
-      payload
-    );
-
-    const responseData = await response.json();
-    console.log("re", responseData);
-    if (response.ok) {
-      return responseData.data;
-    } else {
-      return rejectWithValue(
-        "message" in responseData
-          ? responseData.message
-          : response.status.toString()
+>(
+  "chatSlice/fetchPreviousChatsByGroupIdByGroupId",
+  async (groupId, { rejectWithValue }) => {
+    // console.log("token" + sessionStorage.getItem("SERVER_KEY"));
+    try {
+      const payload = {
+        headers: {
+          "Content-Type": "application/json",
+          "x-auth-token": sessionStorage.getItem("SERVER_KEY") || "",
+        },
+      };
+      const response = await fetch(
+        `${sessionStorage.getItem(
+          "API_BASE_URL"
+        )}/getAllPreviousMessages/${groupId}`,
+        payload
       );
+
+      const responseData = await response.json();
+      if (response.ok) {
+        return responseData.data;
+      } else {
+        return rejectWithValue(
+          "message" in responseData
+            ? responseData.message
+            : response.status.toString()
+        );
+      }
+    } catch (error: any) {
+      return rejectWithValue(error.message || "Failed to fetch chats");
     }
-  } catch (error: any) {
-    return rejectWithValue(error.message || "Failed to fetch chats");
   }
-});
+);
 
 export const chatSlice = createSlice({
   name: "chat",
@@ -69,15 +73,15 @@ export const chatSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchPreviousChats.pending, (state) => {
+      .addCase(fetchPreviousChatsByGroupId.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchPreviousChats.fulfilled, (state, action) => {
+      .addCase(fetchPreviousChatsByGroupId.fulfilled, (state, action) => {
         state.loading = false;
         state.chatData = action.payload;
       })
-      .addCase(fetchPreviousChats.rejected, (state, action) => {
+      .addCase(fetchPreviousChatsByGroupId.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Something went wrong";
       });
