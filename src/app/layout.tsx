@@ -17,7 +17,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         {" "}
-        <StoreProvider>{children} </StoreProvider>
+        <StoreProvider> {children} </StoreProvider>
         <ToastContainer />
       </body>
     </html>
