@@ -5,18 +5,26 @@ import Chat from "./chat";
 import { login } from "@/app/actions/login";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
+import Image from "next/image";
+import backgroundBlur from "../../assets/images/blurBackground.png";
+import { useAppDispatch } from "@/redux/hooks";
+import { fetchAllChatGroups } from "@/redux/slice/chatGroup/chatGroupSlice";
+import { useRouter } from "next/navigation";
 
 const ModalPopup: React.FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-
+  const [password, setPassword] = useState<string>("testchatapp");
+  const [showChats, setShowChats] = useState<Boolean>(false);
+  const router = useRouter();
+  const dispatch = useAppDispatch();
   // Show modal when component mounts
   useEffect(() => {
     setIsOpen(true);
   }, []);
 
   const handleSubmit = () => {
+    sessionStorage.setItem("SERVER_KEY", password);
     // Close modal handler
     login(password)
       .then((res) => {
@@ -24,10 +32,12 @@ const ModalPopup: React.FC = () => {
           //close modal
           setIsOpen(false);
           toast.success(res.message);
+          dispatch(fetchAllChatGroups());
+          router.push("/groups");
         }
       })
       .catch((err) => {
-        toast.error(err.message);
+        toast.error(err.message || "Login Error");
       });
   };
 
@@ -38,10 +48,18 @@ const ModalPopup: React.FC = () => {
 
   return (
     <>
-      <Chat myCreatedBy={inputValue} />
+      <div className="flex h-screen max-w-md mx-auto bg-gray-100">
+        <Image
+          src={backgroundBlur}
+          alt="Background"
+          sizes="100vw"
+          className="object-center"
+          priority
+        />
+      </div>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent backdrop-blur-sm">
-          <div className="bg-white bg-opacity-10 backdrop-blur-md rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent ">
+          <div className="bg-white bg-opacity-10 rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
             <h2 className="text-2xl font-bold mb-4 text-gray-800">
               Welcome to Group Chat
             </h2>
@@ -68,7 +86,7 @@ const ModalPopup: React.FC = () => {
                 (!inputValue || !password) && "cursor-not-allowed opacity-40"
               } w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition duration-200`}
             >
-              Submit
+              Login
             </button>
           </div>
         </div>
