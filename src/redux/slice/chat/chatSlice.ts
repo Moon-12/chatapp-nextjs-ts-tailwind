@@ -14,20 +14,27 @@ export interface ChatState {
   chatData: Message[];
   loading: boolean;
   error: {} | null;
+  chatGroupId: number | null;
 }
 
 const initialState: ChatState = {
   chatData: [],
   loading: false,
   error: null,
+  chatGroupId: null,
 };
 
+interface FetchChatsResponse {
+  data: Message[];
+  groupId: number;
+}
+
 export const fetchPreviousChatsByGroupId = createAsyncThunk<
-  Message[], // return type
+  FetchChatsResponse, // return type
   number, // argument to the thunk (we're not passing any)
   { rejectValue: string } // reject type
 >(
-  "chatSlice/fetchPreviousChatsByGroupIdByGroupId",
+  "chatSlice/fetchPreviousChatsByGroupId",
   async (groupId, { rejectWithValue }) => {
     // console.log("token" + sessionStorage.getItem("SERVER_KEY"));
     try {
@@ -46,7 +53,7 @@ export const fetchPreviousChatsByGroupId = createAsyncThunk<
 
       const responseData = await response.json();
       if (response.ok) {
-        return responseData.data;
+        return { data: responseData.data, groupId };
       } else {
         return rejectWithValue(
           "message" in responseData
@@ -64,8 +71,12 @@ export const chatSlice = createSlice({
   name: "chat",
   initialState,
   reducers: {
-    setPreviousChats: (state, action) => {
-      state.chatData = action.payload;
+    setPreviousChats: (
+      state,
+      action: { payload: { data: Message[]; groupId: number } }
+    ) => {
+      state.chatData = action.payload.data;
+      state.chatGroupId = action.payload.groupId;
     },
     setNewChat: (state, action) => {
       state.chatData.push(action.payload);
@@ -79,7 +90,8 @@ export const chatSlice = createSlice({
       })
       .addCase(fetchPreviousChatsByGroupId.fulfilled, (state, action) => {
         state.loading = false;
-        state.chatData = action.payload;
+        state.chatData = action.payload.data;
+        state.chatGroupId = action.payload.groupId;
       })
       .addCase(fetchPreviousChatsByGroupId.rejected, (state, action) => {
         state.loading = false;

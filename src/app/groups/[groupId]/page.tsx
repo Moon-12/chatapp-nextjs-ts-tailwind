@@ -9,6 +9,7 @@ export default function ChatPage() {
   const initialMessages = useSelector(
     (state: RootState) => state.chat.chatData
   );
+  const groupId = useSelector((state: RootState) => state.chat.chatGroupId);
   const loggedInUser = useSelector(
     (state: RootState) => state.user.loggedInUser
   );
@@ -26,11 +27,12 @@ export default function ChatPage() {
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
-    if (inputText.trim()) {
+    if (inputText.trim() && loggedInUser && groupId) {
       const newMessage = {
         message: inputText,
         createdBy: loggedInUser,
         createdAt: Date.now(),
+        groupId,
       };
       sendMessage(newMessage);
       setInputText("");
