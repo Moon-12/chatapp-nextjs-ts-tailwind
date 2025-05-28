@@ -1,10 +1,12 @@
 import ModalPopup from "../components/modal";
 import DataComponent from "../components/InitialDataLoader";
 
-export default async function Page() {
+export default function Page() {
+  const baseUrl = process.env.API_BASE_URL;
+  console.log("base url", baseUrl);
   return (
     <>
-      <DataComponent url={process.env.API_BASE_URL || ""} />
+      <DataComponent url={baseUrl || ""} />
       <ModalPopup />
     </>
   );
