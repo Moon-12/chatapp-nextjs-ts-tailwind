@@ -14,7 +14,7 @@ import { setLoggedInUser } from "@/redux/slice/user/userSlice";
 const ModalPopup: React.FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>("");
-  const [password, setPassword] = useState<string>("testchatapp");
+  const [password, setPassword] = useState<string>("");
   const [showChats, setShowChats] = useState<Boolean>(false);
   const router = useRouter();
   const dispatch = useAppDispatch();
