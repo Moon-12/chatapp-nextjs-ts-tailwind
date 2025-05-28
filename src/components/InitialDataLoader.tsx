@@ -8,7 +8,12 @@ const InitialDataLoader = ({ url }: { url: string }) => {
     sessionStorage.setItem("API_BASE_URL", url);
   }, [url]);
 
-  return url && <ModalPopup />;
+  return (
+    <>
+      <h1>env from public {process.env.NEXT_PUBLIC_TEST_VAR}</h1>
+      <ModalPopup />
+    </>
+  );
 };
 
 export default InitialDataLoader;
