@@ -1,5 +1,4 @@
-"use server";
-export default async function Page() {
+export default function Page() {
   const baseUrl = process.env.API_BASE_URL;
   return (
     <>
