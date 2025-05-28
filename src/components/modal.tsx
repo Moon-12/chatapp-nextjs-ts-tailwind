@@ -85,7 +85,7 @@ const ModalPopup: React.FC = () => {
               disabled={!password || !inputValue}
               className={`${
                 (!inputValue || !password) && "cursor-not-allowed opacity-40"
-              } w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition duration-200`}
+              } w-full bg-[#00A877] text-white py-2 px-4 rounded hover:bg-[#006241] transition duration-200`}
             >
               Login
             </button>
