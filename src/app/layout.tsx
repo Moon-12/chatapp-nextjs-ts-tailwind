@@ -18,10 +18,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         {" "}
-        <DataComponent
-          url={process.env.API_BASE_URL || ""}
-          serverKey={process.env.SERVER_KEY || ""}
-        />
+        <DataComponent url={process.env.API_BASE_URL || ""} />
         <StoreProvider> {children} </StoreProvider>
         <ToastContainer />
       </body>

@@ -1,11 +1,11 @@
 // lib/stompClient.ts
 import { Message } from "@/redux/slice/chat/chatSlice";
-import { Client, IMessage } from "@stomp/stompjs";
+import { Client, IMessage, StompSubscription } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 
 const stompSingleton = {
   client: null as Client | null,
-  subscription: null as any | null,
+  subscription: null as StompSubscription | null,
   connected: false,
   referenceCount: 0,
   callbacks: new Set<(message: Message) => void>(),
@@ -48,12 +48,12 @@ export const initializeStompClient = (callback: (message: Message) => void) => {
     }
   };
 
-  client.onStompError = (frame) => {
+  client.onStompError = () => {
     //console.error("STOMP error:", frame.headers["message"]);
     stompSingleton.connected = false;
   };
 
-  client.onWebSocketError = (event) => {
+  client.onWebSocketError = () => {
     //console.error("WebSocket error:", event);
     stompSingleton.connected = false;
   };

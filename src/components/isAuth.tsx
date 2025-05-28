@@ -3,9 +3,10 @@
 import { useEffect } from "react";
 import { redirect } from "next/navigation";
 import { getUserSession } from "@/utils/getUserSession";
+import { ComponentType } from "react";
 
-export default function isAuth(Component: any) {
-  return function IsAuth(props: any) {
+export default function isAuth<T extends object>(Component: ComponentType<T>) {
+  return function IsAuth(props: T) {
     const userSession = getUserSession();
 
     useEffect(() => {

@@ -13,7 +13,7 @@ export interface Message {
 export interface ChatState {
   chatData: Message[];
   loading: boolean;
-  error: {} | null;
+  error: string | null;
   chatGroupId: number | null;
 }
 
@@ -61,8 +61,12 @@ export const fetchPreviousChatsByGroupId = createAsyncThunk<
             : response.status.toString()
         );
       }
-    } catch (error: any) {
-      return rejectWithValue(error.message || "Failed to fetch chats");
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message || "Failed to fetch chats");
+      } else {
+        throw new Error("An unknown error occurred while loading chats");
+      }
     }
   }
 );

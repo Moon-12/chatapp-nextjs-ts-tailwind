@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 export interface UserState {
   loggedInUser: string | null;
   loading: boolean;
-  error: {} | null;
+  error: string | null;
 }
 
 const initialState: UserState = {

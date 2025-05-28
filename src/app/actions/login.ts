@@ -1,4 +1,5 @@
 "use server";
+
 export async function login(password: string) {
   if (!password || typeof password !== "string" || password.trim() === "") {
     throw new Error("Password is required");
@@ -22,10 +23,14 @@ export async function login(password: string) {
         responseData.error ||
         `Login failed with status ${response.status}`
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     // Handle network errors or other unexpected issues
-    throw new Error(
-      error.message || "An unexpected error occurred during login"
-    );
+    if (error instanceof Error) {
+      throw new Error(
+        error.message || "An unexpected error occurred during login"
+      );
+    } else {
+      throw new Error("An unknown error occurred during login");
+    }
   }
 }

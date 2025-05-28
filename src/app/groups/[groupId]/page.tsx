@@ -35,7 +35,7 @@ const ChatPage = () => {
     if (groupId && loggedInUser) {
       dispatch(fetchPreviousChatsByGroupId({ groupId, loggedInUser }));
     }
-  }, []);
+  }, [groupId, loggedInUser, dispatch]);
 
   useEffect(() => {
     scrollToBottom();

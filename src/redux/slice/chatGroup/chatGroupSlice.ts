@@ -8,7 +8,7 @@ export interface chatGroup {
 export interface ChatGroupState {
   chatGroupData: chatGroup[];
   loading: boolean;
-  error: {} | null;
+  error: string | null;
 }
 
 const initialState: ChatGroupState = {
@@ -38,8 +38,12 @@ export const fetchAllChatGroups = createAsyncThunk<
           : response.status.toString()
       );
     }
-  } catch (error: any) {
-    return rejectWithValue(error.message || "Failed to fetch groups");
+  } catch (error) {
+    if (error instanceof Error) {
+      return rejectWithValue(error.message || "Failed to fetch groups");
+    } else {
+      throw new Error("An unknown error occurred while loading groups");
+    }
   }
 });
 
