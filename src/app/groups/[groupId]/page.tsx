@@ -4,22 +4,38 @@ import { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store/store";
 import { useStomp } from "@/components/useStomp";
+import { useAppDispatch } from "@/redux/hooks";
+import { fetchPreviousChatsByGroupId } from "@/redux/slice/chat/chatSlice";
+import { useParams } from "next/navigation";
+import isAuth from "@/components/isAuth";
 
-export default function ChatPage() {
+const ChatPage = () => {
+  const params = useParams<{ groupId: string }>();
+  const groupId =
+    params.groupId && !isNaN(parseInt(params.groupId, 10))
+      ? parseInt(params.groupId, 10)
+      : null;
   const initialMessages = useSelector(
     (state: RootState) => state.chat.chatData
   );
-  const groupId = useSelector((state: RootState) => state.chat.chatGroupId);
+
   const loggedInUser = useSelector(
     (state: RootState) => state.user.loggedInUser
   );
   const [inputText, setInputText] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { sendMessage } = useStomp();
+  const dispatch = useAppDispatch();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  useEffect(() => {
+    if (groupId) {
+      dispatch(fetchPreviousChatsByGroupId(groupId));
+    }
+  }, []);
 
   useEffect(() => {
     scrollToBottom();
@@ -124,4 +140,6 @@ export default function ChatPage() {
       </div>
     </div>
   );
-}
+};
+
+export default isAuth(ChatPage);

@@ -24,15 +24,8 @@ export const fetchAllChatGroups = createAsyncThunk<
 >("chatGroupSlice/fetchAllChatGroups", async (_, { rejectWithValue }) => {
   // console.log("token" + sessionStorage.getItem("SERVER_KEY"));
   try {
-    const payload = {
-      headers: {
-        "Content-Type": "application/json",
-        "x-auth-token": "testchatapp",
-      },
-    };
     const response = await fetch(
-      `${sessionStorage.getItem("API_BASE_URL")}/getAllChatGroups`,
-      payload
+      `${sessionStorage.getItem("API_BASE_URL")}/getAllChatGroups`
     );
 
     const responseData = await response.json();

@@ -1,4 +1,5 @@
 "use client";
+import isAuth from "@/components/isAuth";
 import { useAppDispatch } from "@/redux/hooks";
 import { fetchPreviousChatsByGroupId } from "@/redux/slice/chat/chatSlice";
 import { RootState } from "@/redux/store/store";
@@ -45,4 +46,4 @@ const ChatGroupPage = () => {
   );
 };
 
-export default ChatGroupPage;
+export default isAuth(ChatGroupPage);

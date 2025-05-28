@@ -16,7 +16,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: "root",
   storage: storageSession,
-  whitelist: ["chatGroup"], // persist only this reducer
+  whitelist: ["chatGroup", "chat", "user"], // persist only this reducer
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
