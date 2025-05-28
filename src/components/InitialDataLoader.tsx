@@ -2,13 +2,7 @@
 
 import { useEffect } from "react";
 
-const InitialDataLoader = ({
-  url,
-  serverKey,
-}: {
-  url: string;
-  serverKey: string;
-}) => {
+const InitialDataLoader = ({ url }: { url: string; serverKey: string }) => {
   useEffect(() => {
     sessionStorage.setItem("API_BASE_URL", url);
   }, []);
