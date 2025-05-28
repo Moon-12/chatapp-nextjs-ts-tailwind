@@ -64,7 +64,7 @@ const ChatPage = () => {
 
   return (
     <div className="flex flex-col h-screen max-w-md mx-auto bg-gray-100">
-      <div className="bg-[#c9e5c0] text-white p-4 text-center">
+      <div className="bg-[#006241] text-white p-4 text-center">
         <h1 className="text-xl font-bold">Chat App</h1>
       </div>
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
@@ -85,9 +85,9 @@ const ChatPage = () => {
                 <div
                   className={`${
                     msg.createdBy === loggedInUser
-                      ? "bg-blue-500"
-                      : "bg-green-500"
-                  } text-white p-3 rounded-lg max-w-xs relative ${
+                      ? "bg-gray-300 text-black"
+                      : "bg-[#006241] text-white "
+                  } p-3 rounded-lg max-w-xs relative ${
                     msg.createdBy === loggedInUser
                       ? "rounded-br-none"
                       : "rounded-bl-none"
@@ -132,7 +132,7 @@ const ChatPage = () => {
             onClick={handleSend}
             className={`${
               (!loggedInUser || !inputText) && "cursor-not-allowed opacity-40"
-            } bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600`}
+            } bg-[#006241] text-white px-4 py-2 rounded-lg hover:bg-[#006241]-600`}
           >
             Send
           </button>
