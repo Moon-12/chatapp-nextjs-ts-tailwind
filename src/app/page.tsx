@@ -1,8 +1,8 @@
 import ModalPopup from "../components/modal";
 import DataComponent from "../components/InitialDataLoader";
 
-export default function Page() {
-  const baseUrl = process.env.API_BASE_URL;
+export default async function Page() {
+  const baseUrl = await process.env.API_BASE_URL;
   console.log("base url", baseUrl);
   return (
     <>
