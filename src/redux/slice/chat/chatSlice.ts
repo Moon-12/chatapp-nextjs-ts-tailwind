@@ -41,7 +41,6 @@ export const fetchPreviousChatsByGroupId = createAsyncThunk<
       const payload = {
         headers: {
           "Content-Type": "application/json",
-          "x-auth-token": sessionStorage.getItem("SERVER_KEY") || "",
         },
       };
       const response = await fetch(

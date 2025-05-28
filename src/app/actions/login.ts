@@ -9,7 +9,6 @@ export async function login(password: string) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-auth-token": password,
       },
       body: JSON.stringify({ password }),
     });
