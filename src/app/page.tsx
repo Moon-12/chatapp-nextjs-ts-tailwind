@@ -1,4 +1,3 @@
-import ModalPopup from "../components/modal";
 import DataComponent from "../components/InitialDataLoader";
 
 export default async function Page() {
