@@ -37,7 +37,9 @@ const ModalPopup: React.FC = () => {
         }
       })
       .catch((err) => {
-        toast.error(err.message || "Login Error");
+        toast.error(err.message || "Login Error", {
+          autoClose: 3000,
+        });
       });
   };
 
