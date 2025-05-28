@@ -1,6 +1,6 @@
 import InitialDataLoader from "@/components/InitialDataLoader";
 export default async function Page() {
-  const response = await fetch("/api/getBaseURL", {
+  const response = await fetch("/chat-app/api/getBaseURL", {
     cache: "no-store", // Ensure fresh data for server-side fetching
   });
   if (!response.ok) {
