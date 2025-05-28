@@ -15,7 +15,6 @@ const ModalPopup: React.FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [showChats, setShowChats] = useState<Boolean>(false);
   const router = useRouter();
   const dispatch = useAppDispatch();
   // Show modal when component mounts
