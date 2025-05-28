@@ -31,11 +31,11 @@ interface FetchChatsResponse {
 
 export const fetchPreviousChatsByGroupId = createAsyncThunk<
   FetchChatsResponse, // return type
-  number, // argument to the thunk (we're not passing any)
+  { groupId: number; loggedInUser: string }, // argument to the thunk (we're not passing any)
   { rejectValue: string } // reject type
 >(
   "chatSlice/fetchPreviousChatsByGroupId",
-  async (groupId, { rejectWithValue }) => {
+  async ({ groupId, loggedInUser }, { rejectWithValue }) => {
     // console.log("token" + sessionStorage.getItem("SERVER_KEY"));
     try {
       const payload = {
@@ -47,7 +47,7 @@ export const fetchPreviousChatsByGroupId = createAsyncThunk<
       const response = await fetch(
         `${sessionStorage.getItem(
           "API_BASE_URL"
-        )}/getAllPreviousMessages/${groupId}`,
+        )}/getAllPreviousMessages/${groupId}/${loggedInUser}`,
         payload
       );
 

@@ -32,8 +32,8 @@ const ChatPage = () => {
   };
 
   useEffect(() => {
-    if (groupId) {
-      dispatch(fetchPreviousChatsByGroupId(groupId));
+    if (groupId && loggedInUser) {
+      dispatch(fetchPreviousChatsByGroupId({ groupId, loggedInUser }));
     }
   }, []);
 

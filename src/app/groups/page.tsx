@@ -10,12 +10,15 @@ const ChatGroupPage = () => {
   const chatGroups = useSelector(
     (state: RootState) => state.chatGroup.chatGroupData
   );
+  const loggedInUser = useSelector(
+    (state: RootState) => state.user.loggedInUser
+  );
   const dispatch = useAppDispatch();
   const router = useRouter();
 
   const handleJoinGroup = (groupId: number | undefined) => {
-    if (groupId) {
-      dispatch(fetchPreviousChatsByGroupId(groupId));
+    if (groupId && loggedInUser) {
+      dispatch(fetchPreviousChatsByGroupId({ groupId, loggedInUser }));
       router.push(`/groups/${groupId}`);
     }
   };
