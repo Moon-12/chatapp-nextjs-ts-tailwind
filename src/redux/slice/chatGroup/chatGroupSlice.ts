@@ -8,7 +8,7 @@ export interface chatGroup {
 export interface ChatGroupState {
   chatGroupData: chatGroup[];
   loading: boolean;
-  error: {} | null;
+  error: string | null;
 }
 
 const initialState: ChatGroupState = {
@@ -24,16 +24,8 @@ export const fetchAllChatGroups = createAsyncThunk<
 >("chatGroupSlice/fetchAllChatGroups", async (_, { rejectWithValue }) => {
   // console.log("token" + sessionStorage.getItem("SERVER_KEY"));
   try {
-    const payload = {
-      headers: {
-        "Content-Type": "application/json",
-        "x-auth-token": "testchatapp",
-      },
-    };
-    console.log(payload);
     const response = await fetch(
-      `${sessionStorage.getItem("API_BASE_URL")}/getAllChatGroups`,
-      payload
+      `${sessionStorage.getItem("API_BASE_URL")}/getAllChatGroups`
     );
 
     const responseData = await response.json();
@@ -46,8 +38,12 @@ export const fetchAllChatGroups = createAsyncThunk<
           : response.status.toString()
       );
     }
-  } catch (error: any) {
-    return rejectWithValue(error.message || "Failed to fetch groups");
+  } catch (error) {
+    if (error instanceof Error) {
+      return rejectWithValue(error.message || "Failed to fetch groups");
+    } else {
+      throw new Error("An unknown error occurred while loading groups");
+    }
   }
 });
 

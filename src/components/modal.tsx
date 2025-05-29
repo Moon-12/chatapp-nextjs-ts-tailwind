@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Chat from "./chat";
 import { login } from "@/app/actions/login";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
@@ -10,12 +9,12 @@ import backgroundBlur from "../../assets/images/blurBackground.png";
 import { useAppDispatch } from "@/redux/hooks";
 import { fetchAllChatGroups } from "@/redux/slice/chatGroup/chatGroupSlice";
 import { useRouter } from "next/navigation";
+import { setLoggedInUser } from "@/redux/slice/user/userSlice";
 
 const ModalPopup: React.FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>("");
-  const [password, setPassword] = useState<string>("testchatapp");
-  const [showChats, setShowChats] = useState<Boolean>(false);
+  const [password, setPassword] = useState<string>("");
   const router = useRouter();
   const dispatch = useAppDispatch();
   // Show modal when component mounts
@@ -33,11 +32,14 @@ const ModalPopup: React.FC = () => {
           setIsOpen(false);
           toast.success(res.message);
           dispatch(fetchAllChatGroups());
+          dispatch(setLoggedInUser(inputValue));
           router.push("/groups");
         }
       })
       .catch((err) => {
-        toast.error(err.message || "Login Error");
+        toast.error(err.message || "Login Error", {
+          autoClose: 3000,
+        });
       });
   };
 
@@ -84,7 +86,7 @@ const ModalPopup: React.FC = () => {
               disabled={!password || !inputValue}
               className={`${
                 (!inputValue || !password) && "cursor-not-allowed opacity-40"
-              } w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition duration-200`}
+              } w-full bg-[#00A877] text-white py-2 px-4 rounded hover:bg-[#006241] transition duration-200`}
             >
               Login
             </button>

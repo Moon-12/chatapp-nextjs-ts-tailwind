@@ -7,61 +7,79 @@ export interface Message {
   message: string;
   createdBy: string;
   createdAt: Timestamp;
+  groupId: number;
 }
 
 export interface ChatState {
   chatData: Message[];
   loading: boolean;
-  error: {} | null;
+  error: string | null;
+  chatGroupId: number | null;
 }
 
 const initialState: ChatState = {
   chatData: [],
   loading: false,
   error: null,
+  chatGroupId: null,
 };
 
-export const fetchPreviousChats = createAsyncThunk<
-  Message[], // return type
-  void, // argument to the thunk (we're not passing any)
-  { rejectValue: string } // reject type
->("chatSlice/fetchPreviousChats", async (_, { rejectWithValue }) => {
-  // console.log("token" + sessionStorage.getItem("SERVER_KEY"));
-  try {
-    const payload = {
-      headers: {
-        "Content-Type": "application/json",
-        "x-auth-token": sessionStorage.getItem("SERVER_KEY") || "",
-      },
-    };
-    console.log(payload);
-    const response = await fetch(
-      `${sessionStorage.getItem("API_BASE_URL")}/getAllPreviousMessages/1`,
-      payload
-    );
+interface FetchChatsResponse {
+  data: Message[];
+  groupId: number;
+}
 
-    const responseData = await response.json();
-    console.log("re", responseData);
-    if (response.ok) {
-      return responseData.data;
-    } else {
-      return rejectWithValue(
-        "message" in responseData
-          ? responseData.message
-          : response.status.toString()
+export const fetchPreviousChatsByGroupId = createAsyncThunk<
+  FetchChatsResponse, // return type
+  { groupId: number; loggedInUser: string }, // argument to the thunk (we're not passing any)
+  { rejectValue: string } // reject type
+>(
+  "chatSlice/fetchPreviousChatsByGroupId",
+  async ({ groupId, loggedInUser }, { rejectWithValue }) => {
+    // console.log("token" + sessionStorage.getItem("SERVER_KEY"));
+    try {
+      const payload = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+      const response = await fetch(
+        `${sessionStorage.getItem(
+          "API_BASE_URL"
+        )}/getAllPreviousMessages/${groupId}/${loggedInUser}`,
+        payload
       );
+
+      const responseData = await response.json();
+      if (response.ok) {
+        return { data: responseData.data, groupId };
+      } else {
+        return rejectWithValue(
+          "message" in responseData
+            ? responseData.message
+            : response.status.toString()
+        );
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message || "Failed to fetch chats");
+      } else {
+        throw new Error("An unknown error occurred while loading chats");
+      }
     }
-  } catch (error: any) {
-    return rejectWithValue(error.message || "Failed to fetch chats");
   }
-});
+);
 
 export const chatSlice = createSlice({
   name: "chat",
   initialState,
   reducers: {
-    setPreviousChats: (state, action) => {
-      state.chatData = action.payload;
+    setPreviousChats: (
+      state,
+      action: { payload: { data: Message[]; groupId: number } }
+    ) => {
+      state.chatData = action.payload.data;
+      state.chatGroupId = action.payload.groupId;
     },
     setNewChat: (state, action) => {
       state.chatData.push(action.payload);
@@ -69,15 +87,16 @@ export const chatSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchPreviousChats.pending, (state) => {
+      .addCase(fetchPreviousChatsByGroupId.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchPreviousChats.fulfilled, (state, action) => {
+      .addCase(fetchPreviousChatsByGroupId.fulfilled, (state, action) => {
         state.loading = false;
-        state.chatData = action.payload;
+        state.chatData = action.payload.data;
+        state.chatGroupId = action.payload.groupId;
       })
-      .addCase(fetchPreviousChats.rejected, (state, action) => {
+      .addCase(fetchPreviousChatsByGroupId.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Something went wrong";
       });

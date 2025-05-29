@@ -3,19 +3,39 @@
 import { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store/store";
-import { useStomp } from "./useStomp";
+import { useStomp } from "@/components/useStomp";
+import { useAppDispatch } from "@/redux/hooks";
+import { fetchPreviousChatsByGroupId } from "@/redux/slice/chat/chatSlice";
+import { useParams } from "next/navigation";
+import isAuth from "@/components/isAuth";
 
-export default function Chat({ myCreatedBy }: { myCreatedBy: string }) {
+const ChatPage = () => {
+  const params = useParams<{ groupId: string }>();
+  const groupId =
+    params.groupId && !isNaN(parseInt(params.groupId, 10))
+      ? parseInt(params.groupId, 10)
+      : null;
   const initialMessages = useSelector(
     (state: RootState) => state.chat.chatData
   );
-  const [input, setInput] = useState<string>("");
+
+  const loggedInUser = useSelector(
+    (state: RootState) => state.user.loggedInUser
+  );
+  const [inputText, setInputText] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { sendMessage } = useStomp();
+  const dispatch = useAppDispatch();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  useEffect(() => {
+    if (groupId && loggedInUser) {
+      dispatch(fetchPreviousChatsByGroupId({ groupId, loggedInUser }));
+    }
+  }, [groupId, loggedInUser, dispatch]);
 
   useEffect(() => {
     scrollToBottom();
@@ -23,14 +43,15 @@ export default function Chat({ myCreatedBy }: { myCreatedBy: string }) {
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
-    if (input.trim()) {
+    if (inputText.trim() && loggedInUser && groupId) {
       const newMessage = {
-        message: input,
-        createdBy: myCreatedBy,
+        message: inputText,
+        createdBy: loggedInUser,
         createdAt: Date.now(),
+        groupId,
       };
       sendMessage(newMessage);
-      setInput("");
+      setInputText("");
     }
   };
 
@@ -43,38 +64,38 @@ export default function Chat({ myCreatedBy }: { myCreatedBy: string }) {
 
   return (
     <div className="flex flex-col h-screen max-w-md mx-auto bg-gray-100">
-      <div className="bg-[#c9e5c0] text-white p-4 text-center">
+      <div className="bg-[#006241] text-white p-4 text-center">
         <h1 className="text-xl font-bold">Chat App</h1>
       </div>
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {initialMessages &&
+        {initialMessages.length > 0 ? (
           initialMessages.map((msg, index) => (
             <div
               key={index}
               className={`flex flex-col ${
-                msg.createdBy === myCreatedBy ? "items-end" : "items-start"
+                msg.createdBy === loggedInUser ? "items-end" : "items-start"
               }`}
             >
               <div className="flex items-end space-x-2">
-                {msg.createdBy !== myCreatedBy && (
+                {msg.createdBy !== loggedInUser && (
                   <div className="text-xs text-gray-600 bg-gray-200 px-2 py-1 rounded-full">
                     {msg.createdBy}
                   </div>
                 )}
                 <div
                   className={`${
-                    msg.createdBy === myCreatedBy
-                      ? "bg-blue-500"
-                      : "bg-green-500"
-                  } text-white p-3 rounded-lg max-w-xs relative ${
-                    msg.createdBy === myCreatedBy
+                    msg.createdBy === loggedInUser
+                      ? "bg-gray-300 text-black"
+                      : "bg-[#006241] text-white "
+                  } p-3 rounded-lg max-w-xs relative ${
+                    msg.createdBy === loggedInUser
                       ? "rounded-br-none"
                       : "rounded-bl-none"
                   }`}
                 >
                   {msg.message}
                 </div>
-                {msg.createdBy === myCreatedBy && (
+                {msg.createdBy === loggedInUser && (
                   <div className="text-xs text-gray-600 bg-gray-200 px-2 py-1 rounded-full">
                     You
                   </div>
@@ -84,16 +105,21 @@ export default function Chat({ myCreatedBy }: { myCreatedBy: string }) {
                 {formatTimestamp(msg.createdAt)}
               </div>
             </div>
-          ))}
+          ))
+        ) : (
+          <div className="flex items-center justify-center h-full text-gray-400 text-sm">
+            No new messages, say Hello to get started
+          </div>
+        )}
         <div ref={messagesEndRef} />
       </div>
       <div className="p-4 bg-white">
         <div className="flex space-x-2">
           <input
             type="text"
-            value={input}
+            value={inputText}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setInput(e.target.value)
+              setInputText(e.target.value)
             }
             onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) =>
               e.key === "Enter" && handleSend(e)
@@ -102,11 +128,11 @@ export default function Chat({ myCreatedBy }: { myCreatedBy: string }) {
             placeholder="Type a message..."
           />
           <button
-            disabled={!myCreatedBy}
+            disabled={!inputText || !loggedInUser}
             onClick={handleSend}
             className={`${
-              !myCreatedBy && "cursor-not-allowed opacity-40"
-            } bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600`}
+              (!loggedInUser || !inputText) && "cursor-not-allowed opacity-40"
+            } bg-[#006241] text-white px-4 py-2 rounded-lg hover:bg-[#006241]-600`}
           >
             Send
           </button>
@@ -114,4 +140,6 @@ export default function Chat({ myCreatedBy }: { myCreatedBy: string }) {
       </div>
     </div>
   );
-}
+};
+
+export default isAuth(ChatPage);
