@@ -1,7 +1,7 @@
 import InitialDataLoader from "@/components/InitialDataLoader";
 export default async function Page() {
   const response = await fetch(
-    `${process.env.NEXT_URL}/chat-app/api/getBaseURL`,
+    `${process.env.NEXT_API_URL}/chat-app/api/getBaseURL`,
     {
       cache: "no-store", // Ensure fresh data for server-side fetching
     }
@@ -17,11 +17,7 @@ export default async function Page() {
 
   return (
     <>
-      <h1>FRom api {apiBaseUrl} </h1>
-
-      <h1>base url is </h1>
-      <h1>base url is {process.env.SERVER_KEY}</h1>
-      <InitialDataLoader url="test" />
+      <InitialDataLoader url={apiBaseUrl} />
     </>
   );
 }
