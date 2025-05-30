@@ -15,9 +15,11 @@ const ChatPage = () => {
     params.groupId && !isNaN(parseInt(params.groupId, 10))
       ? parseInt(params.groupId, 10)
       : null;
-  const initialMessages = useSelector(
-    (state: RootState) => state.chat.chatData
-  );
+  const {
+    chatData: initialMessages,
+    error,
+    loading,
+  } = useSelector((state: RootState) => state.chat);
 
   const loggedInUser = useSelector(
     (state: RootState) => state.user.loggedInUser
@@ -61,6 +63,10 @@ const ChatPage = () => {
       minute: "2-digit",
     });
   };
+
+  if (error) {
+    throw new Error(error);
+  }
 
   return (
     <div className="flex flex-col h-screen max-w-md mx-auto bg-gray-100">

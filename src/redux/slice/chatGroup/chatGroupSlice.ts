@@ -1,9 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 export interface chatGroup {
-  id?: number;
+  id: number;
   name: string;
-  activeAccess: boolean;
+  activeAccess: string;
 }
 
 export interface ChatGroupState {
@@ -60,6 +60,13 @@ export const chatGroupSlice = createSlice({
     setChatGroups: (state, action) => {
       state.chatGroupData = action.payload;
     },
+    updateGroupAccessStatus: (state, action) => {
+      const { groupId, newStatus } = action.payload;
+      const group = state.chatGroupData.find((grp) => grp.id === groupId);
+      if (group) {
+        group.activeAccess = newStatus;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -79,6 +86,7 @@ export const chatGroupSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { setChatGroups } = chatGroupSlice.actions;
+export const { setChatGroups, updateGroupAccessStatus } =
+  chatGroupSlice.actions;
 
 export default chatGroupSlice.reducer;

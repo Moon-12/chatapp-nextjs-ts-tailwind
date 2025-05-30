@@ -37,14 +37,12 @@ export const initializeStompClient = (callback: (message: Message) => void) => {
         (message: IMessage) => {
           try {
             const parsedMessage = JSON.parse(message.body);
-            //console.log("Received message:", parsedMessage);
             stompSingleton.callbacks.forEach((cb) => cb(parsedMessage));
           } catch (error) {
             console.error("Failed to parse message:", error);
           }
         }
       );
-      console.log("Subscribed to /topic/chat");
     }
   };
 
