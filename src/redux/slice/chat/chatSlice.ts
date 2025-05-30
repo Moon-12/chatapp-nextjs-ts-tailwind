@@ -46,7 +46,7 @@ export const fetchPreviousChatsByGroupId = createAsyncThunk<
       const response = await fetch(
         `${sessionStorage.getItem(
           "API_BASE_URL"
-        )}/getAllPreviousMessages/${groupId}/${loggedInUser}`,
+        )}/getAllPreviousMessages?group_id=${groupId}&user_id=${loggedInUser}`,
         payload
       );
 

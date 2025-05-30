@@ -31,7 +31,8 @@ const ModalPopup: React.FC = () => {
           //close modal
           setIsOpen(false);
           toast.success(res.message);
-          dispatch(fetchAllChatGroups());
+          //pass user id
+          dispatch(fetchAllChatGroups({ loggedInUser: inputValue }));
           dispatch(setLoggedInUser(inputValue));
           router.push("/groups");
         }

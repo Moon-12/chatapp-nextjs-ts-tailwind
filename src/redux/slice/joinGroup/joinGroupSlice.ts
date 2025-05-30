@@ -1,41 +1,40 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
-export interface chatGroup {
-  id?: number;
-  name: string;
-  activeAccess: boolean;
-}
-
-export interface ChatGroupState {
-  chatGroupData: chatGroup[];
+export interface joinGroupState {
+  joinGroupStatus: string | null;
   loading: boolean;
   error: string | null;
 }
 
-const initialState: ChatGroupState = {
-  chatGroupData: [],
+const initialState: joinGroupState = {
+  joinGroupStatus: null,
   loading: false,
   error: null,
 };
 
-export const fetchAllChatGroups = createAsyncThunk<
-  chatGroup[], // return type
-  { loggedInUser: string }, // argument to the thunk (we're not passing any)
+export const joinGroup = createAsyncThunk<
+  string, // return type
+  { loggedInUser: string; groupId: number }, // argument to the thunk (we're not passing any)
   { rejectValue: string } // reject type
 >(
-  "chatGroupSlice/fetchAllChatGroups",
-  async ({ loggedInUser }, { rejectWithValue }) => {
+  "joinGroupSlice/joinGroup",
+  async ({ loggedInUser, groupId }, { rejectWithValue }) => {
     // console.log("token" + sessionStorage.getItem("SERVER_KEY"));
     try {
       const response = await fetch(
-        `${sessionStorage.getItem(
-          "API_BASE_URL"
-        )}/getAllChatGroups?user_id=${loggedInUser}`
+        `${sessionStorage.getItem("API_BASE_URL")}/joinGroup`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId: loggedInUser, groupId }),
+        }
       );
 
       const responseData = await response.json();
       if (response.ok) {
-        return responseData.data;
+        return responseData.message;
       } else {
         return rejectWithValue(
           "message" in responseData
@@ -53,25 +52,21 @@ export const fetchAllChatGroups = createAsyncThunk<
   }
 );
 
-export const chatGroupSlice = createSlice({
+export const joinGroupSlice = createSlice({
   name: "chatGroup",
   initialState,
-  reducers: {
-    setChatGroups: (state, action) => {
-      state.chatGroupData = action.payload;
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchAllChatGroups.pending, (state) => {
+      .addCase(joinGroup.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchAllChatGroups.fulfilled, (state, action) => {
+      .addCase(joinGroup.fulfilled, (state, action) => {
         state.loading = false;
-        state.chatGroupData = action.payload;
+        state.joinGroupStatus = action.payload;
       })
-      .addCase(fetchAllChatGroups.rejected, (state, action) => {
+      .addCase(joinGroup.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Something went wrong";
       });
@@ -79,6 +74,5 @@ export const chatGroupSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { setChatGroups } = chatGroupSlice.actions;
 
-export default chatGroupSlice.reducer;
+export default joinGroupSlice.reducer;
