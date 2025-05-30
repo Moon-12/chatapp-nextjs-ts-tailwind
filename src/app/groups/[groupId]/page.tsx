@@ -3,11 +3,15 @@
 import { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store/store";
-import { useStomp } from "@/components/useStomp";
 import { useAppDispatch } from "@/redux/hooks";
-import { fetchPreviousChatsByGroupId } from "@/redux/slice/chat/chatSlice";
+import {
+  fetchPreviousChatsByGroupId,
+  sendMessage,
+  setNewChat,
+} from "@/redux/slice/chat/chatSlice";
 import { useParams } from "next/navigation";
 import isAuth from "@/components/isAuth";
+import { json } from "stream/consumers";
 
 const ChatPage = () => {
   const params = useParams<{ groupId: string }>();
@@ -26,16 +30,46 @@ const ChatPage = () => {
   );
   const [inputText, setInputText] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { sendMessage } = useStomp();
+  // const { sendMessage } = useStomp();
   const dispatch = useAppDispatch();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const connectToSSE = (eventSource: EventSource) => {
+    // Handle chat messages (default message event)
+    eventSource.onmessage = (event) => {
+      console.log("tweet", event.data);
+    };
+
+    // Handle new message event
+    eventSource.addEventListener("newMessage", (event) => {
+      dispatch(setNewChat(JSON.parse(event.data)));
+    });
+
+    eventSource.onerror = () => {
+      eventSource.close();
+      throw new Error("connection error");
+    };
+  };
+
   useEffect(() => {
     if (groupId && loggedInUser) {
       dispatch(fetchPreviousChatsByGroupId({ groupId, loggedInUser }));
+
+      // Connect to SSE endpoint
+      const eventSource = new EventSource(
+        `${sessionStorage.getItem(
+          "API_BASE_URL"
+        )}/getLatestMessage?group_id=${groupId}&user_id=${loggedInUser}`
+      );
+      connectToSSE(eventSource);
+
+      // Cleanup on component unmount
+      return () => {
+        eventSource.close();
+      };
     }
   }, [groupId, loggedInUser, dispatch]);
 
@@ -52,7 +86,7 @@ const ChatPage = () => {
         createdAt: Date.now(),
         groupId,
       };
-      sendMessage(newMessage);
+      dispatch(sendMessage({ message: newMessage }));
       setInputText("");
     }
   };
@@ -64,9 +98,9 @@ const ChatPage = () => {
     });
   };
 
-  if (error) {
-    throw new Error(error);
-  }
+  // if (error) {
+  //   throw new Error(error);
+  // }
 
   return (
     <div className="flex flex-col h-screen max-w-md mx-auto bg-gray-100">
