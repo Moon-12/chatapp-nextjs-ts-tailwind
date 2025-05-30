@@ -36,18 +36,13 @@ export const fetchPreviousChatsByGroupId = createAsyncThunk<
 >(
   "chatSlice/fetchPreviousChatsByGroupId",
   async ({ groupId, loggedInUser }, { rejectWithValue }) => {
-    // console.log("token" + sessionStorage.getItem("SERVER_KEY"));
+    console.log("user" + loggedInUser);
+    console.log("grp" + groupId);
     try {
-      const payload = {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
       const response = await fetch(
         `${sessionStorage.getItem(
           "API_BASE_URL"
-        )}/getAllPreviousMessages?group_id=${groupId}&user_id=${loggedInUser}`,
-        payload
+        )}/getAllPreviousMessages?user_id=${loggedInUser}&group_id=${groupId}`
       );
 
       const responseData = await response.json();
