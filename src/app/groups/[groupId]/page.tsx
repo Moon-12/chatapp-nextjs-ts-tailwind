@@ -20,11 +20,9 @@ const ChatPage = () => {
     params.groupId && !isNaN(parseInt(params.groupId, 10))
       ? parseInt(params.groupId, 10)
       : null;
-  const {
-    chatData: initialMessages,
-    error,
-    loading,
-  } = useSelector((state: RootState) => state.chat);
+  const { chatData: initialMessages, error } = useSelector(
+    (state: RootState) => state.chat
+  );
 
   const loggedInUser = useSelector(
     (state: RootState) => state.user.loggedInUser
