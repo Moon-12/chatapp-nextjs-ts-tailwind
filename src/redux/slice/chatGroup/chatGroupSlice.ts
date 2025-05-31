@@ -67,6 +67,9 @@ export const chatGroupSlice = createSlice({
         group.activeAccess = newStatus;
       }
     },
+    clearError(state) {
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -86,7 +89,7 @@ export const chatGroupSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { setChatGroups, updateGroupAccessStatus } =
+export const { setChatGroups, updateGroupAccessStatus, clearError } =
   chatGroupSlice.actions;
 
 export default chatGroupSlice.reducer;

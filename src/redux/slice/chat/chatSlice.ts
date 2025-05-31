@@ -119,6 +119,9 @@ export const chatSlice = createSlice({
     setNewChat: (state, action) => {
       state.chatData.push(action.payload);
     },
+    clearError(state) {
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -152,6 +155,6 @@ export const chatSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { setPreviousChats, setNewChat } = chatSlice.actions;
+export const { setPreviousChats, setNewChat, clearError } = chatSlice.actions;
 
 export default chatSlice.reducer;

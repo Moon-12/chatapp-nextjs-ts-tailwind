@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
@@ -9,7 +9,11 @@ import { FaSpinner } from "react-icons/fa";
 import isAuth from "@/components/isAuth";
 import { useAppDispatch } from "@/redux/hooks";
 import { joinGroup } from "@/redux/slice/joinGroup/joinGroupSlice";
-import { updateGroupAccessStatus } from "@/redux/slice/chatGroup/chatGroupSlice";
+import {
+  fetchAllChatGroups,
+  updateGroupAccessStatus,
+  clearError,
+} from "@/redux/slice/chatGroup/chatGroupSlice";
 import { RootState } from "@/redux/store/store";
 
 const ChatGroupPage = () => {
@@ -25,6 +29,12 @@ const ChatGroupPage = () => {
   const loggedInUser = useSelector(
     (state: RootState) => state.user.loggedInUser
   );
+
+  useEffect(() => {
+    if (loggedInUser) {
+      dispatch(fetchAllChatGroups({ loggedInUser }));
+    }
+  }, []);
 
   const handleJoinGroup = async (groupId: number) => {
     if (!loggedInUser || !groupId) return;
@@ -50,9 +60,12 @@ const ChatGroupPage = () => {
     setJoiningGroupId(null);
   };
 
-  if (error) {
-    throw new Error(error);
-  }
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      dispatch(clearError());
+    }
+  }, [error]);
 
   const getButtonText = (access?: string) => {
     switch (access?.toUpperCase()) {

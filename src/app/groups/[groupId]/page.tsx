@@ -8,10 +8,11 @@ import {
   fetchPreviousChatsByGroupId,
   sendMessage,
   setNewChat,
+  clearError,
 } from "@/redux/slice/chat/chatSlice";
 import { useParams } from "next/navigation";
 import isAuth from "@/components/isAuth";
-import { json } from "stream/consumers";
+import { toast } from "react-toastify";
 
 const ChatPage = () => {
   const params = useParams<{ groupId: string }>();
@@ -98,9 +99,12 @@ const ChatPage = () => {
     });
   };
 
-  // if (error) {
-  //   throw new Error(error);
-  // }
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      dispatch(clearError());
+    }
+  }, [error]);
 
   return (
     <div className="flex flex-col h-screen max-w-md mx-auto bg-gray-100">
