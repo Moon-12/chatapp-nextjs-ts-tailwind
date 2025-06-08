@@ -13,8 +13,13 @@ import {
 import { useParams } from "next/navigation";
 import isAuth from "@/components/isAuth";
 import { toast } from "react-toastify";
+import { FaEllipsisV, FaArrowLeft } from "react-icons/fa";
+import { clearSession } from "@/utils/getUserSession";
 
 const ChatPage = () => {
+  const [showProfileMenu, setShowProfileMenu] = useState<boolean>(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null); // Ref for the three dots button
+  const menuRef = useRef<HTMLDivElement>(null);
   const params = useParams<{ groupId: string }>();
   const groupId =
     params.groupId && !isNaN(parseInt(params.groupId, 10))
@@ -106,8 +111,47 @@ const ChatPage = () => {
 
   return (
     <div className="flex flex-col h-screen max-w-md mx-auto bg-gray-100">
-      <div className="bg-[#006241] text-white p-4 text-center">
-        <h1 className="text-xl font-bold">Chat App</h1>
+      <div className="bg-[#006241] text-white p-4 flex items-center justify-between">
+        <button
+          onClick={() => window.history.back()}
+          className="text-white text-lg font-bold"
+        >
+          <FaArrowLeft />
+        </button>
+        <h1 className="text-xl font-bold sticky">Chat App</h1>
+
+        <div className="relative ml-3">
+          <button
+            type="button"
+            className="p-1 text-white focus:outline-none"
+            aria-expanded="false"
+            aria-haspopup="true"
+            onClick={() => setShowProfileMenu(!showProfileMenu)}
+            ref={menuButtonRef}
+          >
+            <FaEllipsisV size={18} />
+          </button>
+
+          {/* Menu inside same relative container */}
+          {showProfileMenu && (
+            <div
+              id="user-menu"
+              className="absolute right-0 z-10 rounded-md w-30  origin-top-right bg-white py-1 shadow-lg focus:outline-none"
+              role="menu"
+              aria-orientation="vertical"
+              aria-labelledby="user-menu-button"
+              ref={menuRef}
+            >
+              <button
+                className="block px-4 py-2 text-sm text-gray-700"
+                role="menuitem"
+                onClick={clearSession}
+              >
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
       </div>
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {initialMessages.length > 0 ? (
