@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}-container
-          image: 192.168.0.147:30008/{{ .Chart.Name }}:{{ .Chart.AppVersion }}
+          image: my-local-registry.example.com:5000/{{ .Chart.Name }}:{{ .Chart.AppVersion }}
           ports:
             - containerPort: 3000
           resources:
