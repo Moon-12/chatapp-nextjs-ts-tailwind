@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { signIn } from "next-auth/react";
 import { toast } from "react-toastify";
 import Image from "next/image";
@@ -8,18 +8,31 @@ import backgroundBlur from "../../assets/images/blurBackground.png";
 import { FaEye, FaEyeSlash, FaSpinner } from "react-icons/fa";
 import { InputField } from "./InputField";
 
+import { useRouter } from "next/navigation";
+import { useAppSession } from "@/context/SessionContext";
+
 const AuthModal: React.FC = () => {
   const [isOpen, setIsOpen] = useState(true);
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const navigated = useRef(false);
+  const router = useRouter();
+  const { status } = useAppSession();
 
   const [form, setForm] = useState({
-    email: "",
-    password: "",
+    email: "twinkle@gmail.com",
+    password: "Testpass@2026",
     confirmPassword: "",
     userName: "",
   });
+  useEffect(() => {
+    console.log("welcome page inside effect");
+    if (status === "authenticated" && !navigated.current) {
+      navigated.current = true; // mark as navigated
+      router.push("/groups"); // navigate once
+    }
+  }, [status, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -42,8 +55,9 @@ const AuthModal: React.FC = () => {
     return true;
   };
 
-  const handleLogin = async () => {
+  const handleLogin = async (e: React.FormEvent) => {
     if (!validate()) return;
+    e.preventDefault();
 
     setLoading(true);
 
@@ -62,8 +76,9 @@ const AuthModal: React.FC = () => {
     }
   };
 
-  const handleSignup = async () => {
+  const handleSignup = async (e: React.FormEvent) => {
     if (!validate()) return;
+    e.preventDefault();
 
     try {
       const res = await fetch(`/api/signup`, {

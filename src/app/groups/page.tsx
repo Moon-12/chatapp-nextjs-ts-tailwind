@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { FaSpinner } from "react-icons/fa";
 
-import isAuth from "@/components/isAuth";
+
 import { useAppDispatch } from "@/redux/hooks";
 import { joinGroup } from "@/redux/slice/joinGroup/joinGroupSlice";
 import {
@@ -128,4 +128,4 @@ const ChatGroupPage = () => {
   );
 };
 
-export default isAuth(ChatGroupPage);
+export default ChatGroupPage;
