@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}-deployment
+  namespace: twinkle-ns
+  labels:
+    app: {{ .Chart.Name }}
+    project: twinkle-chat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+        project: twinkle-chat
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-container
+          image: my-local-registry.example.com:5000/{{ .Chart.Name }}:{{ .Chart.AppVersion }}
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          readinessProbe:
+            httpGet:
+              path: /chat-app
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 600
+          livenessProbe:
+            httpGet:
+              path: /chat-app
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 600
+          env:
+          - name: SERVER_KEY
+            valueFrom:
+              configMapKeyRef:
+                name: chat-config-map
+                key: server_key
+          - name: API_BASE_URL
+            valueFrom:
+              configMapKeyRef:
+                name: chat-config-map
+                key: api_base_url
+          - name: NEXT_API_URL
+            valueFrom:
+              configMapKeyRef:
+                name: chat-config-map
+                key: next_api_url

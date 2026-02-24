@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+---
 
-First, run the development server:
+**Repository:** `chatapp-nextjs-ts-tailwind`
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+```md
+# Real-Time Chat Frontend (Next.js + TypeScript)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+This repository contains the frontend for a real-time, group-based chat application built using **Next.js**, **TypeScript**, and **Tailwind CSS**. The UI is designed to be highly responsive, reactive, and optimized for real-time updates streamed from the backend via Server-Sent Events (SSE).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🚀 Project Overview
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The frontend provides an interactive chat experience with dynamic group management, real-time message updates, and presence-aware UI behavior. It communicates with a Spring Boot backend that streams messages efficiently using SSE.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🧩 Architecture
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Framework:** Next.js (React)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS
+- **State Management:** React state + effects
+- **Messaging:** Server-Sent Events (SSE)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The UI is designed to handle:
+- Continuous message streams
+- Group membership updates
+- Real-time UI refresh without polling
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🔑 Core Features
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Group-Based Chat UI**
+  - Request to join groups
+  - Await admin approval
+  - Access chat only after approval
+
+- **Real-Time Messaging**
+  - Messages streamed live using SSE
+  - Automatic UI updates without page reloads
+
+- **Reactive Interface**
+  - Dynamic message lists
+  - User presence awareness
+  - Optimized rendering for frequent updates
+
+- **Scalable UI Design**
+  - Efficient handling of continuous message streams
+  - Clean separation of UI and service logic
+
+---
+
+## 🛠️ Technologies Used
+
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+- Server-Sent Events (SSE)
+
+---
+
+## ⚙️ Setup Instructions
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Moon-12/chatapp-nextjs-ts-tailwind
+   cd chatapp-nextjs-ts-tailwind
