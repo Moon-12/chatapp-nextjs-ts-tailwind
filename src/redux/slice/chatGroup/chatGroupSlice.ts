@@ -1,8 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 export interface chatGroup {
-  id?: number;
+  id: number;
   name: string;
+  activeAccess: string;
 }
 
 export interface ChatGroupState {
@@ -19,33 +20,38 @@ const initialState: ChatGroupState = {
 
 export const fetchAllChatGroups = createAsyncThunk<
   chatGroup[], // return type
-  void, // argument to the thunk (we're not passing any)
+  { loggedInUser: string }, // argument to the thunk (we're not passing any)
   { rejectValue: string } // reject type
->("chatGroupSlice/fetchAllChatGroups", async (_, { rejectWithValue }) => {
-  // console.log("token" + sessionStorage.getItem("SERVER_KEY"));
-  try {
-    const response = await fetch(
-      `${sessionStorage.getItem("API_BASE_URL")}/getAllChatGroups`
-    );
-
-    const responseData = await response.json();
-    if (response.ok) {
-      return responseData.data;
-    } else {
-      return rejectWithValue(
-        "message" in responseData
-          ? responseData.message
-          : response.status.toString()
+>(
+  "chatGroupSlice/fetchAllChatGroups",
+  async ({ loggedInUser }, { rejectWithValue }) => {
+    // console.log("token" + sessionStorage.getItem("SERVER_KEY"));
+    try {
+      const response = await fetch(
+        `${sessionStorage.getItem(
+          "API_BASE_URL"
+        )}/getAllChatGroups?user_id=${loggedInUser}`
       );
-    }
-  } catch (error) {
-    if (error instanceof Error) {
-      return rejectWithValue(error.message || "Failed to fetch groups");
-    } else {
-      throw new Error("An unknown error occurred while loading groups");
+
+      const responseData = await response.json();
+      if (response.ok) {
+        return responseData.data;
+      } else {
+        return rejectWithValue(
+          "message" in responseData
+            ? responseData.message
+            : response.status.toString()
+        );
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message || "Failed to fetch groups");
+      } else {
+        throw new Error("An unknown error occurred while loading groups");
+      }
     }
   }
-});
+);
 
 export const chatGroupSlice = createSlice({
   name: "chatGroup",
@@ -53,6 +59,16 @@ export const chatGroupSlice = createSlice({
   reducers: {
     setChatGroups: (state, action) => {
       state.chatGroupData = action.payload;
+    },
+    updateGroupAccessStatus: (state, action) => {
+      const { groupId, newStatus } = action.payload;
+      const group = state.chatGroupData.find((grp) => grp.id === groupId);
+      if (group) {
+        group.activeAccess = newStatus;
+      }
+    },
+    clearError(state) {
+      state.error = null;
     },
   },
   extraReducers: (builder) => {
@@ -73,6 +89,7 @@ export const chatGroupSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { setChatGroups } = chatGroupSlice.actions;
+export const { setChatGroups, updateGroupAccessStatus, clearError } =
+  chatGroupSlice.actions;
 
 export default chatGroupSlice.reducer;

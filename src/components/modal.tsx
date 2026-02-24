@@ -7,7 +7,6 @@ import { toast } from "react-toastify";
 import Image from "next/image";
 import backgroundBlur from "../../assets/images/blurBackground.png";
 import { useAppDispatch } from "@/redux/hooks";
-import { fetchAllChatGroups } from "@/redux/slice/chatGroup/chatGroupSlice";
 import { useRouter } from "next/navigation";
 import { setLoggedInUser } from "@/redux/slice/user/userSlice";
 
@@ -31,7 +30,6 @@ const ModalPopup: React.FC = () => {
           //close modal
           setIsOpen(false);
           toast.success(res.message);
-          dispatch(fetchAllChatGroups());
           dispatch(setLoggedInUser(inputValue));
           router.push("/groups");
         }
@@ -78,7 +76,7 @@ const ModalPopup: React.FC = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Name"
+              placeholder="Password"
               className="w-full p-2 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <button

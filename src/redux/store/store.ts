@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import chatReducer from "../slice/chat/chatSlice";
 import chatGroupReducer from "../slice/chatGroup/chatGroupSlice";
+import joinGroupReducer from "../slice/joinGroup/joinGroupSlice";
 import userReducer from "../slice/user/userSlice";
 import { persistStore, persistReducer } from "redux-persist";
 import storageSession from "redux-persist/lib/storage/session";
@@ -10,13 +11,14 @@ const rootReducer = combineReducers({
   chat: chatReducer,
   chatGroup: chatGroupReducer,
   user: userReducer,
+  joinGroup: joinGroupReducer,
   // other reducers...
 });
 
 const persistConfig = {
   key: "root",
   storage: storageSession,
-  whitelist: ["chatGroup", "chat", "user"], // persist only this reducer
+  whitelist: ["user"], // persist only this reducer
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

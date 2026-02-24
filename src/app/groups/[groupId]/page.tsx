@@ -3,20 +3,30 @@
 import { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store/store";
-import { useStomp } from "@/components/useStomp";
 import { useAppDispatch } from "@/redux/hooks";
-import { fetchPreviousChatsByGroupId } from "@/redux/slice/chat/chatSlice";
+import {
+  fetchPreviousChatsByGroupId,
+  sendMessage,
+  setNewChat,
+  clearError,
+} from "@/redux/slice/chat/chatSlice";
 import { useParams } from "next/navigation";
 import isAuth from "@/components/isAuth";
+import { toast } from "react-toastify";
+import { FaEllipsisV, FaArrowLeft } from "react-icons/fa";
+import { clearSession } from "@/utils/getUserSession";
 
 const ChatPage = () => {
+  const [showProfileMenu, setShowProfileMenu] = useState<boolean>(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null); // Ref for the three dots button
+  const menuRef = useRef<HTMLDivElement>(null);
   const params = useParams<{ groupId: string }>();
   const groupId =
     params.groupId && !isNaN(parseInt(params.groupId, 10))
       ? parseInt(params.groupId, 10)
       : null;
-  const initialMessages = useSelector(
-    (state: RootState) => state.chat.chatData
+  const { chatData: initialMessages, error } = useSelector(
+    (state: RootState) => state.chat
   );
 
   const loggedInUser = useSelector(
@@ -24,16 +34,46 @@ const ChatPage = () => {
   );
   const [inputText, setInputText] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { sendMessage } = useStomp();
+  // const { sendMessage } = useStomp();
   const dispatch = useAppDispatch();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const connectToSSE = (eventSource: EventSource) => {
+    // Handle chat messages (default message event)
+    eventSource.onmessage = (event) => {
+      console.log("tweet", event.data);
+    };
+
+    // Handle new message event
+    eventSource.addEventListener("newMessage", (event) => {
+      dispatch(setNewChat(JSON.parse(event.data)));
+    });
+
+    eventSource.onerror = () => {
+      eventSource.close();
+      throw new Error("connection error");
+    };
+  };
+
   useEffect(() => {
     if (groupId && loggedInUser) {
       dispatch(fetchPreviousChatsByGroupId({ groupId, loggedInUser }));
+
+      // Connect to SSE endpoint
+      const eventSource = new EventSource(
+        `${sessionStorage.getItem(
+          "API_BASE_URL"
+        )}/getLatestMessage?group_id=${groupId}&user_id=${loggedInUser}`
+      );
+      connectToSSE(eventSource);
+
+      // Cleanup on component unmount
+      return () => {
+        eventSource.close();
+      };
     }
   }, [groupId, loggedInUser, dispatch]);
 
@@ -50,7 +90,7 @@ const ChatPage = () => {
         createdAt: Date.now(),
         groupId,
       };
-      sendMessage(newMessage);
+      dispatch(sendMessage({ message: newMessage }));
       setInputText("");
     }
   };
@@ -62,10 +102,56 @@ const ChatPage = () => {
     });
   };
 
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      dispatch(clearError());
+    }
+  }, [error]);
+
   return (
     <div className="flex flex-col h-screen max-w-md mx-auto bg-gray-100">
-      <div className="bg-[#006241] text-white p-4 text-center">
-        <h1 className="text-xl font-bold">Chat App</h1>
+      <div className="bg-[#006241] text-white p-4 flex items-center justify-between">
+        <button
+          onClick={() => window.history.back()}
+          className="text-white text-lg font-bold"
+        >
+          <FaArrowLeft />
+        </button>
+        <h1 className="text-xl font-bold sticky">Chat App</h1>
+
+        <div className="relative ml-3">
+          <button
+            type="button"
+            className="p-1 text-white focus:outline-none"
+            aria-expanded="false"
+            aria-haspopup="true"
+            onClick={() => setShowProfileMenu(!showProfileMenu)}
+            ref={menuButtonRef}
+          >
+            <FaEllipsisV size={18} />
+          </button>
+
+          {/* Menu inside same relative container */}
+          {showProfileMenu && (
+            <div
+              id="user-menu"
+              className="absolute right-0 z-10 rounded-md w-30  origin-top-right bg-white py-1 shadow-lg focus:outline-none"
+              role="menu"
+              aria-orientation="vertical"
+              aria-labelledby="user-menu-button"
+              ref={menuRef}
+            >
+              <button
+                className="block px-4 py-2 text-sm text-gray-700"
+                role="menuitem"
+                onClick={clearSession}
+              >
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
       </div>
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {initialMessages.length > 0 ? (
