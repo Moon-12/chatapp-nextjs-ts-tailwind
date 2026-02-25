@@ -21,7 +21,7 @@ const ChatGroupPage = () => {
 
   const dispatch = useAppDispatch();
   const router = useRouter();
-
+ 
   const chatGroups = useSelector(
     (state: RootState) => state.chatGroup.chatGroupData
   );
@@ -31,9 +31,9 @@ const ChatGroupPage = () => {
   );
 
   useEffect(() => {
-    if (loggedInUser) {
-      dispatch(fetchAllChatGroups({ loggedInUser }));
-    }
+
+      dispatch(fetchAllChatGroups());
+    
   }, []);
 
   const handleJoinGroup = async (groupId: number) => {

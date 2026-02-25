@@ -70,16 +70,17 @@ export const authOptions: AuthOptions = {
     async jwt({ token, session, user }) {
       console.log("**********");
       console.log("inside jwt callback");
-      console.log({ token, session, user });
-      console.log("**********" + "\n");
+      // console.log({ token, session, user });
+      // console.log("**********" + "\n");
       if (user) {
-        console.log("**********");
-        console.log("user present", user);
-        console.log("**********" + "\n");
+        // console.log("**********");
+        // console.log("user present", user);
+        // console.log("**********" + "\n");
         const decoded: DecodedJWT = jwtDecode(user.accessToken);
-        console.log("Decoded", decoded);
+        // console.log("Decoded", decoded);
         token.accessToken = user.accessToken;
         token.refreshToken = user.refreshToken;
+        token.email = user.id;
         token.accessTokenExpires = decoded.exp * 1000;
       }
 
@@ -103,6 +104,10 @@ export const authOptions: AuthOptions = {
     async session({ session, token }) {
       session.accessToken = token.accessToken as string;
       session.error = token.error;
+      session.user = {
+        email: token.email as string,
+      };
+
       return session;
     },
   },
@@ -110,7 +115,7 @@ export const authOptions: AuthOptions = {
 
 async function refreshAccessToken(token: JWT) {
   try {
-    console.log("inside refresh token");
+    // console.log("inside refresh token");
     const response = await fetch(`${process.env.SSO_API_URL}/refresh-token`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

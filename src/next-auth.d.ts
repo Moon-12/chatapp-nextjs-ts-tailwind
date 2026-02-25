@@ -1,4 +1,4 @@
-import  "next-auth";
+import "next-auth";
 
 declare module "next-auth" {
   interface User {
@@ -10,6 +10,9 @@ declare module "next-auth" {
     accessToken: string;
     refreshToken: string;
     error?: string;
+    user: {
+      email: string;
+    };
   }
 }
 
@@ -25,5 +28,5 @@ declare module "next-auth/jwt" {
 export interface DecodedJWT {
   exp: number; // expiry timestamp in seconds
   iat: number; // issued at
-  sub?: string; // optional subject
+  sub: string; // optional subject
 }

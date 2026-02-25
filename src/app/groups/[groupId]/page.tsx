@@ -11,10 +11,8 @@ import {
   clearError,
 } from "@/redux/slice/chat/chatSlice";
 import { useParams } from "next/navigation";
-import isAuth from "@/components/isAuth";
 import { toast } from "react-toastify";
 import { FaEllipsisV, FaArrowLeft } from "react-icons/fa";
-import { clearSession } from "@/utils/getUserSession";
 
 const ChatPage = () => {
   const [showProfileMenu, setShowProfileMenu] = useState<boolean>(false);
@@ -145,7 +143,7 @@ const ChatPage = () => {
               <button
                 className="block px-4 py-2 text-sm text-gray-700"
                 role="menuitem"
-                onClick={clearSession}
+                
               >
                 Logout
               </button>
@@ -228,4 +226,4 @@ const ChatPage = () => {
   );
 };
 
-export default isAuth(ChatPage);
+export default ChatPage;
