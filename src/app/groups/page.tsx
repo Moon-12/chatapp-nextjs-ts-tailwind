@@ -5,8 +5,6 @@ import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { FaSpinner } from "react-icons/fa";
-
-
 import { useAppDispatch } from "@/redux/hooks";
 import { joinGroup } from "@/redux/slice/joinGroup/joinGroupSlice";
 import {
@@ -21,27 +19,21 @@ const ChatGroupPage = () => {
 
   const dispatch = useAppDispatch();
   const router = useRouter();
- 
+
   const chatGroups = useSelector(
-    (state: RootState) => state.chatGroup.chatGroupData
+    (state: RootState) => state.chatGroup.chatGroupData,
   );
   const { loading, error } = useSelector((state: RootState) => state.joinGroup);
-  const loggedInUser = useSelector(
-    (state: RootState) => state.user.loggedInUser
-  );
-
   useEffect(() => {
-
-      dispatch(fetchAllChatGroups());
-    
+    dispatch(fetchAllChatGroups());
   }, []);
 
   const handleJoinGroup = async (groupId: number) => {
-    if (!loggedInUser || !groupId) return;
+    if (!groupId) return;
 
     setJoiningGroupId(groupId);
 
-    const result = await dispatch(joinGroup({ loggedInUser, groupId }));
+    const result = await dispatch(joinGroup({ groupId }));
 
     let statusMessage;
     if (joinGroup.fulfilled.match(result)) {
@@ -105,7 +97,7 @@ const ChatGroupPage = () => {
                   isButtonDisabled(grp.id, grp.activeAccess)
                     ? "cursor-not-allowed opacity-40"
                     : ""
-                } w-40 px-4 py-1.5 bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-sm rounded-full font-medium hover:from-blue-600 hover:to-indigo-600 transition flex items-center justify-center gap-2`}
+                } w-40 px-4 py-1.5 bg-gradient-to-r bg-gradient-to-r from-[#00A877] to-[#006241] text-white text-sm rounded-full font-medium hover:[#00A877] hover:[#006241] transition flex items-center justify-center gap-2`}
               >
                 {joiningGroupId === grp.id && loading ? (
                   <>
