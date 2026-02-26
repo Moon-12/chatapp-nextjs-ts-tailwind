@@ -37,38 +37,25 @@ interface sendMessageResponse {
 
 export const sendMessage = createAsyncThunk<
   sendMessageResponse, // return type
-  { message: Message }, // argument to the thunk (we're not passing any)
+  { message: Message }, // argument to the thunk
   { rejectValue: { message: string; status: number } } // reject type
 >("chatSlice/sendMessage", async ({ message }, { rejectWithValue }) => {
-  try {
-    const response = await fetch(
-      `${sessionStorage.getItem("API_BASE_URL")}/postMessageToGroup`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(message),
-      },
-    );
+  const response = await fetch("/chat-app/api/postMessageToGroup", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(message),
+  });
 
-    const responseData = await response.json();
-    if (response.ok) {
-      return { message: responseData.message };
-    } else {
-      return rejectWithValue(
-        "message" in responseData
-          ? responseData.message
-          : response.status.toString(),
-      );
-    }
-  } catch (error) {
-    if (error instanceof Error) {
-      return rejectWithValue(error.message || "Failed to fetch chats");
-    } else {
-      throw new Error("An unknown error occurred while loading chats");
-    }
+  const responseJson = await response.json();
+  if (!response.ok) {
+    return rejectWithValue({
+      message: responseJson.message,
+      status: response.status,
+    });
   }
+  return { data: responseJson.data };
 });
 
 export const fetchPreviousChatsByGroupId = createAsyncThunk<
@@ -89,7 +76,7 @@ export const fetchPreviousChatsByGroupId = createAsyncThunk<
       });
     }
 
-    return {data:responseJson.data,groupId};
+    return { data: responseJson.data, groupId };
   },
 );
 

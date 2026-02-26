@@ -40,40 +40,35 @@ const ChatPage = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const connectToSSE = (eventSource: EventSource) => {
-    // Handle chat messages (default message event)
-    eventSource.onmessage = (event) => {
-      console.log("tweet", event.data);
-    };
+  useEffect(() => {
+    if (!groupId) return;
 
-    // Handle new message event
+    // Fetch previous messages
+    dispatch(fetchPreviousChatsByGroupId({ groupId }));
+
+    //Connect to SSE via Next.js API
+    const eventSource = new EventSource(
+      `/chat-app/api/sse/messages?group_id=${groupId}`,
+    );
+
+    eventSource.onopen = () => {
+      console.log("✅ SSE connection opened");
+    };
+    eventSource.addEventListener("heartbeat", (event) => {
+      console.log("Heartbeat received:", event.data);
+    });
     eventSource.addEventListener("newMessage", (event) => {
       dispatch(setNewChat(JSON.parse(event.data)));
     });
 
-    eventSource.onerror = () => {
+    eventSource.onerror = (Error) => {
+      console.log("Errr", Error);
       eventSource.close();
-      throw new Error("connection error");
     };
-  };
 
-  useEffect(() => {
-    if (groupId) {
-      dispatch(fetchPreviousChatsByGroupId({ groupId }));
-
-      // Connect to SSE endpoint
-      const eventSource = new EventSource(
-        `${sessionStorage.getItem(
-          "API_BASE_URL",
-        )}/getLatestMessage?group_id=${groupId}`,
-      );
-      connectToSSE(eventSource);
-
-      // Cleanup on component unmount
-      return () => {
-        eventSource.close();
-      };
-    }
+    return () => {
+      eventSource.close();
+    };
   }, [groupId, dispatch]);
 
   useEffect(() => {
@@ -85,7 +80,7 @@ const ChatPage = () => {
     if (inputText.trim() && groupId) {
       const newMessage = {
         message: inputText,
-        createdBy: "",
+        createdBy: loggedInUser,
         createdAt: Date.now(),
         groupId,
       };
