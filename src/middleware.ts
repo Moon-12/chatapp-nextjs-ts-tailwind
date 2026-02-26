@@ -3,12 +3,12 @@ import { withAuth } from "next-auth/middleware";
 export default withAuth({
   callbacks: {
     authorized({ token, req }) {
-      console.log("starts here**********");
-      console.log("inside middleware  callback");
-      console.log("token", token);
-      console.log("**********" + "\n");
+      // console.log("starts here**********");
+
+      // console.log("token", token);
+      // console.log("**********" + "\n");
       const path = req.nextUrl.pathname;
-      console.log("path", path);
+      console.log("inside middleware callback", path);
 
       if (path.includes("/api/auth")) return true;
       // Exclude signup API from auth check

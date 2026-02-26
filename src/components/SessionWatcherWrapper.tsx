@@ -1,9 +1,9 @@
 // SessionWatcherWrapper.tsx
 "use client";
+import LoadingComponent from "@/app/loading";
 import { SessionContext } from "@/context/SessionContext";
 import { useSession, signOut } from "next-auth/react";
-import { ReactNode } from "react";
-
+import { ReactNode, useMemo } from "react";
 
 interface Props {
   children: ReactNode;
@@ -12,13 +12,16 @@ interface Props {
 export default function SessionWatcherWrapper({ children }: Props) {
   const { data: session, status } = useSession();
 
+  console.log("inside watch warpper");
   // your watcher logic
   if (session?.error === "RefreshAccessTokenError") {
     signOut({ callbackUrl: "/chat-app" });
   }
 
+  const contextValue = useMemo(() => ({ session, status }), [session, status]);
+
   return (
-    <SessionContext.Provider value={{ session, status }}>
+    <SessionContext.Provider value={contextValue}>
       {children}
     </SessionContext.Provider>
   );

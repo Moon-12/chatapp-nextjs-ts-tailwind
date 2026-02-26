@@ -8,7 +8,6 @@ export async function withAuthFetch(
   init: RequestInit = {},
 ): Promise<Response> {
   let session;
-  console.log("inside auth fetch");
   try {
     session = await getUserSession();
   } catch (err) {

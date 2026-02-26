@@ -8,13 +8,15 @@ import {
   fetchPreviousChatsByGroupId,
   sendMessage,
   setNewChat,
-  clearError,
 } from "@/redux/slice/chat/chatSlice";
 import { useParams } from "next/navigation";
-import { toast } from "react-toastify";
 import { FaEllipsisV, FaArrowLeft } from "react-icons/fa";
+import LoadingComponent from "@/app/loading";
+import { useAppSession } from "@/context/SessionContext";
 
 const ChatPage = () => {
+  const { session, status } = useAppSession();
+  const loggedInUser = session?.user?.email || "";
   const [showProfileMenu, setShowProfileMenu] = useState<boolean>(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null); // Ref for the three dots button
   const menuRef = useRef<HTMLDivElement>(null);
@@ -23,13 +25,12 @@ const ChatPage = () => {
     params.groupId && !isNaN(parseInt(params.groupId, 10))
       ? parseInt(params.groupId, 10)
       : null;
-  const { chatData: initialMessages, error } = useSelector(
-    (state: RootState) => state.chat
-  );
+  const {
+    chatData: initialMessages,
+    error,
+    loading,
+  } = useSelector((state: RootState) => state.chat);
 
-  const loggedInUser = useSelector(
-    (state: RootState) => state.user.loggedInUser
-  );
   const [inputText, setInputText] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   // const { sendMessage } = useStomp();
@@ -57,14 +58,14 @@ const ChatPage = () => {
   };
 
   useEffect(() => {
-    if (groupId && loggedInUser) {
-      dispatch(fetchPreviousChatsByGroupId({ groupId, loggedInUser }));
+    if (groupId) {
+      dispatch(fetchPreviousChatsByGroupId({ groupId }));
 
       // Connect to SSE endpoint
       const eventSource = new EventSource(
         `${sessionStorage.getItem(
-          "API_BASE_URL"
-        )}/getLatestMessage?group_id=${groupId}&user_id=${loggedInUser}`
+          "API_BASE_URL",
+        )}/getLatestMessage?group_id=${groupId}`,
       );
       connectToSSE(eventSource);
 
@@ -73,7 +74,7 @@ const ChatPage = () => {
         eventSource.close();
       };
     }
-  }, [groupId, loggedInUser, dispatch]);
+  }, [groupId, dispatch]);
 
   useEffect(() => {
     scrollToBottom();
@@ -81,10 +82,10 @@ const ChatPage = () => {
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
-    if (inputText.trim() && loggedInUser && groupId) {
+    if (inputText.trim() && groupId) {
       const newMessage = {
         message: inputText,
-        createdBy: loggedInUser,
+        createdBy: "",
         createdAt: Date.now(),
         groupId,
       };
@@ -99,13 +100,49 @@ const ChatPage = () => {
       minute: "2-digit",
     });
   };
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-100">
+        <LoadingComponent />
+      </div>
+    );
+  }
 
-  useEffect(() => {
-    if (error) {
-      toast.error(error);
-      dispatch(clearError());
+  if (error) {
+    let title = "Error";
+    let message = error.message;
+
+    if (error.status === 401) {
+      title = "Not Logged In";
+      message = "Please log in to access this chat.";
     }
-  }, [error]);
+
+    if (error.status === 403) {
+      title = "Not Authorized";
+      message = "You are not allowed to access this chat group.";
+    }
+
+    if (error.status === 404) {
+      title = "Group Not Found";
+      message = "This chat group does not exist.";
+    }
+
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-100">
+        <div className="bg-white p-8 rounded-xl shadow-md text-center max-w-sm">
+          <h2 className="text-xl font-semibold text-red-600 mb-2">{title}</h2>
+          <p className="text-gray-600">{message}</p>
+
+          <button
+            onClick={() => window.history.back()}
+            className="mt-6 bg-[#006241] text-white px-4 py-2 rounded-lg"
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-screen max-w-md mx-auto bg-gray-100">
@@ -143,7 +180,6 @@ const ChatPage = () => {
               <button
                 className="block px-4 py-2 text-sm text-gray-700"
                 role="menuitem"
-                
               >
                 Logout
               </button>
@@ -152,7 +188,7 @@ const ChatPage = () => {
         </div>
       </div>
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {initialMessages.length > 0 ? (
+        {initialMessages && initialMessages.length > 0 ? (
           initialMessages.map((msg, index) => (
             <div
               key={index}
@@ -212,10 +248,10 @@ const ChatPage = () => {
             placeholder="Type a message..."
           />
           <button
-            disabled={!inputText || !loggedInUser}
+            disabled={!inputText}
             onClick={handleSend}
             className={`${
-              (!loggedInUser || !inputText) && "cursor-not-allowed opacity-40"
+              !inputText && "cursor-not-allowed opacity-40"
             } bg-[#006241] text-white px-4 py-2 rounded-lg hover:bg-[#006241]-600`}
           >
             Send

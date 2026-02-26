@@ -68,7 +68,7 @@ export const authOptions: AuthOptions = {
 
   callbacks: {
     async jwt({ token, session, user }) {
-      console.log("**********");
+      //console.log("**********");
       console.log("inside jwt callback");
       // console.log({ token, session, user });
       // console.log("**********" + "\n");
@@ -102,6 +102,8 @@ export const authOptions: AuthOptions = {
     },
 
     async session({ session, token }) {
+      console.log("inside session callback");
+
       session.accessToken = token.accessToken as string;
       session.error = token.error;
       session.user = {
@@ -128,7 +130,7 @@ async function refreshAccessToken(token: JWT) {
     if (!response.ok) throw refreshed;
 
     const decoded: DecodedJWT = jwtDecode(refreshed.accessToken);
-    console.log("inside refresh token", refreshed);
+    console.log("inside refresh token");
     return {
       ...token,
       accessToken: refreshed.accessToken,
