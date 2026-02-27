@@ -10,16 +10,14 @@ import {
   setNewChat,
 } from "@/redux/slice/chat/chatSlice";
 import { useParams } from "next/navigation";
-import { FaEllipsisV, FaArrowLeft } from "react-icons/fa";
+import { FaArrowLeft } from "react-icons/fa";
 import LoadingComponent from "@/app/loading";
 import { useAppSession } from "@/context/SessionContext";
+import ProfileMenu from "@/components/ProfileMenu";
 
 const ChatPage = () => {
-  const { session, status } = useAppSession();
+  const { session } = useAppSession();
   const loggedInUser = session?.user?.email || "";
-  const [showProfileMenu, setShowProfileMenu] = useState<boolean>(false);
-  const menuButtonRef = useRef<HTMLButtonElement>(null); // Ref for the three dots button
-  const menuRef = useRef<HTMLDivElement>(null);
   const params = useParams<{ groupId: string }>();
   const groupId =
     params.groupId && !isNaN(parseInt(params.groupId, 10))
@@ -165,37 +163,7 @@ const ChatPage = () => {
         </button>
         <h1 className="text-xl font-bold sticky">Chat App</h1>
 
-        <div className="relative ml-3">
-          <button
-            type="button"
-            className="p-1 text-white focus:outline-none"
-            aria-expanded="false"
-            aria-haspopup="true"
-            onClick={() => setShowProfileMenu(!showProfileMenu)}
-            ref={menuButtonRef}
-          >
-            <FaEllipsisV size={18} />
-          </button>
-
-          {/* Menu inside same relative container */}
-          {showProfileMenu && (
-            <div
-              id="user-menu"
-              className="absolute right-0 z-10 rounded-md w-30  origin-top-right bg-white py-1 shadow-lg focus:outline-none"
-              role="menu"
-              aria-orientation="vertical"
-              aria-labelledby="user-menu-button"
-              ref={menuRef}
-            >
-              <button
-                className="block px-4 py-2 text-sm text-gray-700"
-                role="menuitem"
-              >
-                Logout
-              </button>
-            </div>
-          )}
-        </div>
+         <ProfileMenu />  
       </div>
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {loadingInitial ? (
