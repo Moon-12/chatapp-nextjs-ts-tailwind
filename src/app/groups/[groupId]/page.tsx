@@ -28,7 +28,7 @@ const ChatPage = () => {
   const {
     chatData: initialMessages,
     error,
-    loading,
+    loadingInitial,
   } = useSelector((state: RootState) => state.chat);
 
   const [inputText, setInputText] = useState<string>("");
@@ -43,31 +43,44 @@ const ChatPage = () => {
   useEffect(() => {
     if (!groupId) return;
 
-    // Fetch previous messages
     dispatch(fetchPreviousChatsByGroupId({ groupId }));
 
-    //Connect to SSE via Next.js API
-    const eventSource = new EventSource(
-      `/chat-app/api/sse/messages?group_id=${groupId}`,
-    );
+    let eventSource: EventSource;
+    let reconnectTimeout: ReturnType<typeof setTimeout>;
+    let isUnmounted = false; // tracks if component is gone
 
-    eventSource.onopen = () => {
-      console.log("✅ SSE connection opened");
-    };
-    eventSource.addEventListener("heartbeat", (event) => {
-      console.log("Heartbeat received:", event.data);
-    });
-    eventSource.addEventListener("newMessage", (event) => {
-      dispatch(setNewChat(JSON.parse(event.data)));
-    });
+    const connect = () => {
+      if (isUnmounted) return; // don't reconnect if user navigated away
 
-    eventSource.onerror = (Error) => {
-      console.log("Errr", Error);
-      eventSource.close();
+      eventSource = new EventSource(
+        `/chat-app/api/sse/messages?group_id=${groupId}`,
+      );
+
+      eventSource.onopen = () => {
+        console.log("SSE connected");
+      };
+
+      eventSource.addEventListener("newMessage", (event) => {
+        dispatch(setNewChat(JSON.parse(event.data)));
+      });
+
+      eventSource.onerror = (err) => {
+        console.warn("SSE dropped, reconnecting in 3s...", err);
+        if(error){
+        eventSource.close(); //clean up the dead connection
+        }
+        if (!isUnmounted) {
+          reconnectTimeout = setTimeout(connect, 3000); //try again in 3s
+        }
+      };
     };
+
+    connect(); // initial connection
 
     return () => {
-      eventSource.close();
+      isUnmounted = true; // prevent reconnect after unmount
+      clearTimeout(reconnectTimeout); // cancel any pending reconnect
+      eventSource?.close(); // clean up open connection
     };
   }, [groupId, dispatch]);
 
@@ -95,13 +108,13 @@ const ChatPage = () => {
       minute: "2-digit",
     });
   };
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-gray-100">
-        <LoadingComponent />
-      </div>
-    );
-  }
+  // if (loadingInitial) {
+  //   return (
+  //     <div className="flex items-center justify-center h-screen bg-gray-100">
+  //       <LoadingComponent />
+  //     </div>
+  //   );
+  // }
 
   if (error) {
     let title = "Error";
@@ -183,7 +196,11 @@ const ChatPage = () => {
         </div>
       </div>
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {initialMessages && initialMessages.length > 0 ? (
+        {loadingInitial ? (
+          <div className="flex items-center justify-center h-full">
+            <LoadingComponent />
+          </div>
+        ) : initialMessages && initialMessages.length > 0 ? (
           initialMessages.map((msg, index) => (
             <div
               key={index}

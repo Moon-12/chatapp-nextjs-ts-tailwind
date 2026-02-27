@@ -1,5 +1,4 @@
 import { withAuthFetch } from "@/utils/withAuthFetch";
-import { withAuthSseFetch } from "@/utils/withAuthSseFetch";
 import { NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic";

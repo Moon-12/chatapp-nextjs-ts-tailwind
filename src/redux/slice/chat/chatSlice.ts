@@ -12,7 +12,8 @@ export interface Message {
 
 export interface ChatState {
   chatData: Message[];
-  loading: boolean;
+  loadingInitial: boolean;
+  sendMessageLoading:boolean;
   error: { message: string; status: number } | null;
   chatGroupId: number | null;
   sendMessageStatus: string;
@@ -20,7 +21,8 @@ export interface ChatState {
 
 const initialState: ChatState = {
   chatData: [],
-  loading: false,
+  loadingInitial: true,
+  sendMessageLoading: false,
   error: null,
   chatGroupId: null,
   sendMessageStatus: "",
@@ -55,7 +57,7 @@ export const sendMessage = createAsyncThunk<
       status: response.status,
     });
   }
-  return { data: responseJson.data };
+  return responseJson;
 });
 
 export const fetchPreviousChatsByGroupId = createAsyncThunk<
@@ -101,16 +103,16 @@ export const chatSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchPreviousChatsByGroupId.pending, (state) => {
-        state.loading = true;
+        state.loadingInitial = true;
         state.error = null;
       })
       .addCase(fetchPreviousChatsByGroupId.fulfilled, (state, action) => {
-        state.loading = false;
+        state.loadingInitial = false;
         state.chatData = action.payload.data;
         state.chatGroupId = action.payload.groupId;
       })
       .addCase(fetchPreviousChatsByGroupId.rejected, (state, action) => {
-        state.loading = false;
+        state.loadingInitial = false;
         state.error = action.payload || {
           message: "Something went wrong",
           status: 500,
@@ -118,15 +120,15 @@ export const chatSlice = createSlice({
       });
     builder
       .addCase(sendMessage.pending, (state) => {
-        state.loading = true;
+        state.sendMessageLoading = true;
         state.error = null;
       })
       .addCase(sendMessage.fulfilled, (state, action) => {
-        state.loading = false;
+        state.sendMessageLoading = false;
         state.sendMessageStatus = action.payload.message;
       })
       .addCase(sendMessage.rejected, (state, action) => {
-        state.loading = false;
+        state.sendMessageLoading = false;
         state.error = action.payload || {
           message: "Something went wrong",
           status: 500,

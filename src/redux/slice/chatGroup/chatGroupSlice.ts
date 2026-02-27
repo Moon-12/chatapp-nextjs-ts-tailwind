@@ -14,7 +14,7 @@ export interface ChatGroupState {
 
 const initialState: ChatGroupState = {
   chatGroupData: [],
-  loading: false,
+  loading: true,
   error: null,
 };
 
