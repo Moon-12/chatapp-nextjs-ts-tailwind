@@ -28,7 +28,7 @@ export const joinGroup = createAsyncThunk<
   });
 
   const data = await response.json();
-  console.log("/chat-app/api/joinGroup", data);
+  
 
   if (!response.ok) {
     return rejectWithValue(data.message || "Failed to join group");
