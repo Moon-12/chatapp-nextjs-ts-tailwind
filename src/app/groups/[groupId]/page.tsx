@@ -35,7 +35,7 @@ const ChatPage = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   // const { sendMessage } = useStomp();
   const dispatch = useAppDispatch();
-
+  const fatalErrorRef = useRef(false);
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -43,7 +43,17 @@ const ChatPage = () => {
   useEffect(() => {
     if (!groupId) return;
 
-    dispatch(fetchPreviousChatsByGroupId({ groupId }));
+    fatalErrorRef.current = false; // reset on groupId change
+
+    dispatch(fetchPreviousChatsByGroupId({ groupId })).then((result) => {
+      // If fetch failed with a fatal error, mark it
+      if (fetchPreviousChatsByGroupId.rejected.match(result)) {
+        const status = result.payload?.status;
+    if (status && status >= 400 && status < 500) {
+          fatalErrorRef.current = true; // tops SSE from reconnecting
+        }
+      }
+    });
 
     let eventSource: EventSource;
     let reconnectTimeout: ReturnType<typeof setTimeout>;
@@ -66,10 +76,9 @@ const ChatPage = () => {
 
       eventSource.onerror = (err) => {
         console.warn("SSE dropped, reconnecting in 3s...", err);
-        if(error){
         eventSource.close(); //clean up the dead connection
-        }
-        if (!isUnmounted) {
+
+        if (!isUnmounted && !fatalErrorRef.current) {
           reconnectTimeout = setTimeout(connect, 3000); //try again in 3s
         }
       };
@@ -108,13 +117,6 @@ const ChatPage = () => {
       minute: "2-digit",
     });
   };
-  // if (loadingInitial) {
-  //   return (
-  //     <div className="flex items-center justify-center h-screen bg-gray-100">
-  //       <LoadingComponent />
-  //     </div>
-  //   );
-  // }
 
   if (error) {
     let title = "Error";
