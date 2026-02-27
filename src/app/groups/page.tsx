@@ -13,6 +13,7 @@ import {
   clearError,
 } from "@/redux/slice/chatGroup/chatGroupSlice";
 import { RootState } from "@/redux/store/store";
+import LoadingComponent from "../loading";
 
 const ChatGroupPage = () => {
   const [joiningGroupId, setJoiningGroupId] = useState<number | null>(null);
@@ -20,9 +21,9 @@ const ChatGroupPage = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
 
-  const chatGroups = useSelector(
-    (state: RootState) => state.chatGroup.chatGroupData,
-  );
+const { chatGroupData, loading: groupsLoading, error: groupsError } = useSelector(
+  (state: RootState) => state.chatGroup
+);
   const { loading, error } = useSelector((state: RootState) => state.joinGroup);
   useEffect(() => {
     dispatch(fetchAllChatGroups());
@@ -80,8 +81,8 @@ const ChatGroupPage = () => {
       </h2>
 
       <div className="space-y-4">
-        {chatGroups.length > 0 ? (
-          chatGroups.map((grp) => (
+        {groupsLoading? <LoadingComponent/>:chatGroupData.length > 0 ? (
+          chatGroupData.map((grp) => (
             <div
               key={grp.id}
               className="flex items-center justify-between bg-white shadow-sm border border-gray-200 rounded-2xl px-5 py-4 hover:shadow-md transition-transform hover:-translate-y-1"
