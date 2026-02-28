@@ -154,17 +154,7 @@ const ChatPage = () => {
 
   return (
     <div className="flex flex-col h-screen max-w-md mx-auto bg-gray-100">
-      <div className="bg-[#006241] text-white p-4 flex items-center justify-between">
-        <button
-          onClick={() => window.history.back()}
-          className="text-white text-lg font-bold"
-        >
-          <FaArrowLeft />
-        </button>
-        <h1 className="text-xl font-bold sticky">Chat App</h1>
-
-         <ProfileMenu />  
-      </div>
+   
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {loadingInitial ? (
           <div className="flex items-center justify-center h-full">

@@ -13,7 +13,7 @@ import {
   clearError,
 } from "@/redux/slice/chatGroup/chatGroupSlice";
 import { RootState } from "@/redux/store/store";
-import LoadingComponent from "../loading";
+import LoadingComponent from "@/app/loading";
 
 const ChatGroupPage = () => {
   const [joiningGroupId, setJoiningGroupId] = useState<number | null>(null);
