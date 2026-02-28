@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import StoreProvider from "@/redux/store/StoreProvider";
 import { ToastContainer } from "react-toastify";
+import { AuthSessionProvider } from "@/components/AuthSessionProvider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -17,7 +18,9 @@ export default function RootLayout({
     <html lang="en">
       <body>
         {" "}
+        <AuthSessionProvider>
         <StoreProvider> {children} </StoreProvider>
+        </AuthSessionProvider>
         <ToastContainer />
       </body>
     </html>
