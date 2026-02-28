@@ -14,43 +14,28 @@ const initialState: joinGroupState = {
 
 export const joinGroup = createAsyncThunk<
   string, // return type
-  { loggedInUser: string; groupId: number }, // argument to the thunk (we're not passing any)
+  { groupId: number }, // argument to the thunk (we're not passing any)
   { rejectValue: string } // reject type
->(
-  "joinGroupSlice/joinGroup",
-  async ({ loggedInUser, groupId }, { rejectWithValue }) => {
-    // console.log("token" + sessionStorage.getItem("SERVER_KEY"));
-    try {
-      const response = await fetch(
-        `${sessionStorage.getItem("API_BASE_URL")}/joinGroup`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ userId: loggedInUser, groupId }),
-        }
-      );
+>("joinGroupSlice/joinGroup", async ({ groupId }, { rejectWithValue }) => {
+  // consle.log("token" + sessionStorage.getItem("SERVER_KEY"));
 
-      const responseData = await response.json();
-      if (response.ok) {
-        return responseData.message;
-      } else {
-        return rejectWithValue(
-          "message" in responseData
-            ? responseData.message
-            : response.status.toString()
-        );
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        return rejectWithValue(error.message || "Failed to fetch groups");
-      } else {
-        throw new Error("An unknown error occurred while loading groups");
-      }
-    }
+  const response = await fetch("/chat-app/api/joinGroup", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ groupId }),
+  });
+
+  const data = await response.json();
+  
+
+  if (!response.ok) {
+    return rejectWithValue(data.message || "Failed to join group");
   }
-);
+
+  return data.message;
+});
 
 export const joinGroupSlice = createSlice({
   name: "chatGroup",

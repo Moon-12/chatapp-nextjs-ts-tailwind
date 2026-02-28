@@ -14,44 +14,24 @@ export interface ChatGroupState {
 
 const initialState: ChatGroupState = {
   chatGroupData: [],
-  loading: false,
+  loading: true,
   error: null,
 };
 
 export const fetchAllChatGroups = createAsyncThunk<
   chatGroup[], // return type
-  { loggedInUser: string }, // argument to the thunk (we're not passing any)
+  void, // argument to the thunk (we're not passing any)
   { rejectValue: string } // reject type
->(
-  "chatGroupSlice/fetchAllChatGroups",
-  async ({ loggedInUser }, { rejectWithValue }) => {
-    // console.log("token" + sessionStorage.getItem("SERVER_KEY"));
-    try {
-      const response = await fetch(
-        `${sessionStorage.getItem(
-          "API_BASE_URL"
-        )}/getAllChatGroups?user_id=${loggedInUser}`
-      );
+>("chatGroupSlice/fetchAllChatGroups", async (_, { rejectWithValue }) => {
+  // console.log("token" + sessionStorage.getItem("SERVER_KEY"));
+   const response = await fetch("/chat-app/api/getAllChatGroups");
 
-      const responseData = await response.json();
-      if (response.ok) {
-        return responseData.data;
-      } else {
-        return rejectWithValue(
-          "message" in responseData
-            ? responseData.message
-            : response.status.toString()
-        );
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        return rejectWithValue(error.message || "Failed to fetch groups");
-      } else {
-        throw new Error("An unknown error occurred while loading groups");
-      }
+    const responseJson = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(responseJson.message);
     }
-  }
-);
+    return responseJson.data;
+});
 
 export const chatGroupSlice = createSlice({
   name: "chatGroup",

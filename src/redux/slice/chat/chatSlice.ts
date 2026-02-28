@@ -12,15 +12,17 @@ export interface Message {
 
 export interface ChatState {
   chatData: Message[];
-  loading: boolean;
-  error: string | null;
+  loadingInitial: boolean;
+  sendMessageLoading:boolean;
+  error: { message: string; status: number } | null;
   chatGroupId: number | null;
   sendMessageStatus: string;
 }
 
 const initialState: ChatState = {
   chatData: [],
-  loading: false,
+  loadingInitial: true,
+  sendMessageLoading: false,
   error: null,
   chatGroupId: null,
   sendMessageStatus: "",
@@ -37,72 +39,47 @@ interface sendMessageResponse {
 
 export const sendMessage = createAsyncThunk<
   sendMessageResponse, // return type
-  { message: Message }, // argument to the thunk (we're not passing any)
-  { rejectValue: string } // reject type
+  { message: Message }, // argument to the thunk
+  { rejectValue: { message: string; status: number } } // reject type
 >("chatSlice/sendMessage", async ({ message }, { rejectWithValue }) => {
-  try {
-    const response = await fetch(
-      `${sessionStorage.getItem("API_BASE_URL")}/postMessageToGroup`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(message),
-      }
-    );
+  const response = await fetch("/chat-app/api/postMessageToGroup", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(message),
+  });
 
-    const responseData = await response.json();
-    if (response.ok) {
-      return { message: responseData.message };
-    } else {
-      return rejectWithValue(
-        "message" in responseData
-          ? responseData.message
-          : response.status.toString()
-      );
-    }
-  } catch (error) {
-    if (error instanceof Error) {
-      return rejectWithValue(error.message || "Failed to fetch chats");
-    } else {
-      throw new Error("An unknown error occurred while loading chats");
-    }
+  const responseJson = await response.json();
+  if (!response.ok) {
+    return rejectWithValue({
+      message: responseJson.message,
+      status: response.status,
+    });
   }
+  return responseJson;
 });
 
 export const fetchPreviousChatsByGroupId = createAsyncThunk<
   FetchChatsResponse, // return type
-  { groupId: number; loggedInUser: string }, // argument to the thunk (we're not passing any)
-  { rejectValue: string } // reject type
+  { groupId: number }, // argument to the thunk (we're not passing any)
+  { rejectValue: { message: string; status: number } } // reject type
 >(
   "chatSlice/fetchPreviousChatsByGroupId",
-  async ({ groupId, loggedInUser }, { rejectWithValue }) => {
-    try {
-      const response = await fetch(
-        `${sessionStorage.getItem(
-          "API_BASE_URL"
-        )}/getAllPreviousMessages?user_id=${loggedInUser}&group_id=${groupId}`
-      );
-
-      const responseData = await response.json();
-      if (response.ok) {
-        return { data: responseData.data, groupId };
-      } else {
-        return rejectWithValue(
-          "message" in responseData
-            ? responseData.message
-            : response.status.toString()
-        );
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        return rejectWithValue(error.message || "Failed to fetch chats");
-      } else {
-        throw new Error("An unknown error occurred while loading chats");
-      }
+  async ({ groupId }, { rejectWithValue }) => {
+    const response = await fetch(
+      `/chat-app/api/getAllPreviousMessages?&group_id=${groupId}`,
+    );
+    const responseJson = await response.json();
+    if (!response.ok) {
+      return rejectWithValue({
+        message: responseJson.message,
+        status: response.status,
+      });
     }
-  }
+
+    return { data: responseJson.data, groupId };
+  },
 );
 
 export const chatSlice = createSlice({
@@ -111,7 +88,7 @@ export const chatSlice = createSlice({
   reducers: {
     setPreviousChats: (
       state,
-      action: { payload: { data: Message[]; groupId: number } }
+      action: { payload: { data: Message[]; groupId: number } },
     ) => {
       state.chatData = action.payload.data;
       state.chatGroupId = action.payload.groupId;
@@ -126,30 +103,36 @@ export const chatSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchPreviousChatsByGroupId.pending, (state) => {
-        state.loading = true;
+        state.loadingInitial = true;
         state.error = null;
       })
       .addCase(fetchPreviousChatsByGroupId.fulfilled, (state, action) => {
-        state.loading = false;
+        state.loadingInitial = false;
         state.chatData = action.payload.data;
         state.chatGroupId = action.payload.groupId;
       })
       .addCase(fetchPreviousChatsByGroupId.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload || "Something went wrong";
+        state.loadingInitial = false;
+        state.error = action.payload || {
+          message: "Something went wrong",
+          status: 500,
+        };
       });
     builder
       .addCase(sendMessage.pending, (state) => {
-        state.loading = true;
+        state.sendMessageLoading = true;
         state.error = null;
       })
       .addCase(sendMessage.fulfilled, (state, action) => {
-        state.loading = false;
+        state.sendMessageLoading = false;
         state.sendMessageStatus = action.payload.message;
       })
       .addCase(sendMessage.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload || "Something went wrong";
+        state.sendMessageLoading = false;
+        state.error = action.payload || {
+          message: "Something went wrong",
+          status: 500,
+        };
       });
   },
 });

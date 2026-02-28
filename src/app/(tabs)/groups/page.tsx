@@ -5,8 +5,6 @@ import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { FaSpinner } from "react-icons/fa";
-
-import isAuth from "@/components/isAuth";
 import { useAppDispatch } from "@/redux/hooks";
 import { joinGroup } from "@/redux/slice/joinGroup/joinGroupSlice";
 import {
@@ -15,6 +13,7 @@ import {
   clearError,
 } from "@/redux/slice/chatGroup/chatGroupSlice";
 import { RootState } from "@/redux/store/store";
+import LoadingComponent from "@/app/loading";
 
 const ChatGroupPage = () => {
   const [joiningGroupId, setJoiningGroupId] = useState<number | null>(null);
@@ -22,26 +21,20 @@ const ChatGroupPage = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
 
-  const chatGroups = useSelector(
-    (state: RootState) => state.chatGroup.chatGroupData
-  );
+const { chatGroupData, loading: groupsLoading } = useSelector(
+  (state: RootState) => state.chatGroup
+);
   const { loading, error } = useSelector((state: RootState) => state.joinGroup);
-  const loggedInUser = useSelector(
-    (state: RootState) => state.user.loggedInUser
-  );
-
   useEffect(() => {
-    if (loggedInUser) {
-      dispatch(fetchAllChatGroups({ loggedInUser }));
-    }
-  }, []);
+    dispatch(fetchAllChatGroups());
+  }, [dispatch]);
 
   const handleJoinGroup = async (groupId: number) => {
-    if (!loggedInUser || !groupId) return;
+    if (!groupId) return;
 
     setJoiningGroupId(groupId);
 
-    const result = await dispatch(joinGroup({ loggedInUser, groupId }));
+    const result = await dispatch(joinGroup({ groupId }));
 
     let statusMessage;
     if (joinGroup.fulfilled.match(result)) {
@@ -65,7 +58,7 @@ const ChatGroupPage = () => {
       toast.error(error);
       dispatch(clearError());
     }
-  }, [error]);
+  }, [error,dispatch]);
 
   const getButtonText = (access?: string) => {
     switch (access?.toUpperCase()) {
@@ -88,8 +81,8 @@ const ChatGroupPage = () => {
       </h2>
 
       <div className="space-y-4">
-        {chatGroups.length > 0 ? (
-          chatGroups.map((grp) => (
+        {groupsLoading? <LoadingComponent/>:chatGroupData.length > 0 ? (
+          chatGroupData.map((grp) => (
             <div
               key={grp.id}
               className="flex items-center justify-between bg-white shadow-sm border border-gray-200 rounded-2xl px-5 py-4 hover:shadow-md transition-transform hover:-translate-y-1"
@@ -105,7 +98,7 @@ const ChatGroupPage = () => {
                   isButtonDisabled(grp.id, grp.activeAccess)
                     ? "cursor-not-allowed opacity-40"
                     : ""
-                } w-40 px-4 py-1.5 bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-sm rounded-full font-medium hover:from-blue-600 hover:to-indigo-600 transition flex items-center justify-center gap-2`}
+                } w-40 px-4 py-1.5 bg-gradient-to-r bg-gradient-to-r from-[#00A877] to-[#006241] text-white text-sm rounded-full font-medium hover:[#00A877] hover:[#006241] transition flex items-center justify-center gap-2`}
               >
                 {joiningGroupId === grp.id && loading ? (
                   <>
@@ -128,4 +121,4 @@ const ChatGroupPage = () => {
   );
 };
 
-export default isAuth(ChatGroupPage);
+export default ChatGroupPage;

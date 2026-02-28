@@ -8,7 +8,7 @@ const LoadingComponent = () => {
   };
   return (
     <ClipLoader
-      color="#3b82f6"
+      color="#006241"
       cssOverride={override}
       size={150}
       aria-label="loading-spinner"
