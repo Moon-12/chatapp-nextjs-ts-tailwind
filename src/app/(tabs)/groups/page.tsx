@@ -21,13 +21,13 @@ const ChatGroupPage = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
 
-const { chatGroupData, loading: groupsLoading, error: groupsError } = useSelector(
+const { chatGroupData, loading: groupsLoading } = useSelector(
   (state: RootState) => state.chatGroup
 );
   const { loading, error } = useSelector((state: RootState) => state.joinGroup);
   useEffect(() => {
     dispatch(fetchAllChatGroups());
-  }, []);
+  }, [dispatch]);
 
   const handleJoinGroup = async (groupId: number) => {
     if (!groupId) return;
@@ -58,7 +58,7 @@ const { chatGroupData, loading: groupsLoading, error: groupsError } = useSelecto
       toast.error(error);
       dispatch(clearError());
     }
-  }, [error]);
+  }, [error,dispatch]);
 
   const getButtonText = (access?: string) => {
     switch (access?.toUpperCase()) {

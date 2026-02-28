@@ -22,8 +22,8 @@ const AuthModal: React.FC = () => {
   const { status } = useAppSession();
 
   const [form, setForm] = useState({
-    email: "twinkle@gmail.com",
-    password: "Testpass@2026",
+    email: "",
+    password: "",
     confirmPassword: "",
     userName: "",
   });
@@ -100,6 +100,7 @@ const AuthModal: React.FC = () => {
         setIsLogin(true);
       }
     } catch (error) {
+      console.error(error);
       toast.error("Something went wrong");
     }
   };

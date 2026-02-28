@@ -1,7 +1,7 @@
 "use client";
 import { SessionProvider } from "next-auth/react";
 import { ReactNode } from "react";
-import SessionWatcherWrapper from "./SessionWatcherWrapper"; "";
+import SessionWatcherWrapper from "./SessionWatcherWrapper";
 
 interface Props {
   children: ReactNode;

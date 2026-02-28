@@ -10,10 +10,8 @@ import {
   setNewChat,
 } from "@/redux/slice/chat/chatSlice";
 import { useParams } from "next/navigation";
-import { FaArrowLeft } from "react-icons/fa";
 import LoadingComponent from "@/app/loading";
 import { useAppSession } from "@/context/SessionContext";
-import ProfileMenu from "@/components/ProfileMenu";
 
 const ChatPage = () => {
   const { session } = useAppSession();
@@ -31,7 +29,6 @@ const ChatPage = () => {
 
   const [inputText, setInputText] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  // const { sendMessage } = useStomp();
   const dispatch = useAppDispatch();
   const fatalErrorRef = useRef(false);
   const scrollToBottom = () => {
@@ -75,6 +72,22 @@ const ChatPage = () => {
         console.warn("SSE dropped, reconnecting in 3s...", err);
         eventSource.close(); //clean up the dead connection
 
+        // use this only happens in dev when 2 tabs are opened session issue
+        /* fetch("/chat-app/api/auth/session")
+          .then((res) => res.json())
+          .then((session) => {
+            if (!session?.user) {
+              fatalErrorRef.current = true; // session gone, stop loop
+              return;
+            }
+            if (!isUnmounted && !fatalErrorRef.current) {
+              reconnectTimeout = setTimeout(connect, 3000);
+            }
+          })
+          .catch(() => {
+            // if session check itself fails, stop reconnecting
+            fatalErrorRef.current = true;
+          });*/
         if (!isUnmounted && !fatalErrorRef.current) {
           reconnectTimeout = setTimeout(connect, 3000); //try again in 3s
         }
