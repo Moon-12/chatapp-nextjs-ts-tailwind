@@ -40,14 +40,13 @@ const ChatPage = () => {
 
   useEffect(() => {
     if (!groupId) return;
-
     fatalErrorRef.current = false; // reset on groupId change
 
     dispatch(fetchPreviousChatsByGroupId({ groupId })).then((result) => {
       // If fetch failed with a fatal error, mark it
       if (fetchPreviousChatsByGroupId.rejected.match(result)) {
         const status = result.payload?.status;
-    if (status && status >= 400 && status < 500) {
+        if (status && status >= 400 && status < 500) {
           fatalErrorRef.current = true; // tops SSE from reconnecting
         }
       }
@@ -136,17 +135,19 @@ const ChatPage = () => {
     }
 
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-100">
-        <div className="bg-white p-8 rounded-xl shadow-md text-center max-w-sm">
-          <h2 className="text-xl font-semibold text-red-600 mb-2">{title}</h2>
-          <p className="text-gray-600">{message}</p>
+      <div className="flex flex-col h-screen max-w-md mx-auto bg-gray-100">
+        <div className="flex items-center justify-center h-screen bg-gray-100">
+          <div className="bg-white p-8 rounded-xl shadow-md text-center max-w-sm">
+            <h2 className="text-xl font-semibold text-red-600 mb-2">{title}</h2>
+            <p className="text-gray-600">{message}</p>
 
-          <button
-            onClick={() => window.history.back()}
-            className="mt-6 bg-[#006241] text-white px-4 py-2 rounded-lg"
-          >
-            Go Back
-          </button>
+            <button
+              onClick={() => window.history.back()}
+              className="mt-6 bg-[#006241] text-white px-4 py-2 rounded-lg"
+            >
+              Go Back
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -154,7 +155,6 @@ const ChatPage = () => {
 
   return (
     <div className="flex flex-col h-screen max-w-md mx-auto bg-gray-100">
-   
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {loadingInitial ? (
           <div className="flex items-center justify-center h-full">

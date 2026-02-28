@@ -10,6 +10,7 @@ import { InputField } from "./InputField";
 
 import { useRouter } from "next/navigation";
 import { useAppSession } from "@/context/SessionContext";
+import logo from "../../assets/images/chat_logo.png";
 
 const AuthModal: React.FC = () => {
   const [isOpen, setIsOpen] = useState(true);
@@ -123,6 +124,10 @@ const AuthModal: React.FC = () => {
       <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
         <div className="bg-white/90 backdrop-blur-lg border border-white/30 shadow-2xl rounded-2xl max-w-md w-full p-6 relative">
           {/* Title */}
+          <div className="flex items-center justify-center gap-2 mb-3">
+            <Image src={logo} alt="Grouply logo" width={32} height={32} />
+            <h1 className="text-2xl font-bold text-gray-800">Grouply</h1>
+          </div>
           <h2 className="text-2xl font-bold text-center text-gray-800 mb-3">
             {isLogin ? "Welcome Back" : "Create Account"}
           </h2>
