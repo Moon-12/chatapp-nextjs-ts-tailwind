@@ -42,18 +42,33 @@ spec:
             initialDelaySeconds: 15
             periodSeconds: 600
           env:
-          - name: SERVER_KEY
+          - name: APP_KEY
             valueFrom:
-              configMapKeyRef:
-                name: chat-config-map
-                key: server_key
-          - name: API_BASE_URL
+              secretKeyRef:
+                name: chat-app-secret
+                key: app_key
+          - name: BACKEND_CHAT_API_URL
             valueFrom:
-              configMapKeyRef:
-                name: chat-config-map
-                key: api_base_url
-          - name: NEXT_API_URL
+              secretKeyRef:
+                name: chat-app-secret
+                key: backend_chat_api_url
+          - name: NEXTAUTH_URL
             valueFrom:
-              configMapKeyRef:
-                name: chat-config-map
-                key: next_api_url
+              secretKeyRef:
+                name: chat-app-secret
+                key: nextauth_url
+          - name: NEXTAUTH_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: chat-app-secret
+                key: nextauth_secret
+          - name: NEXTAUTH_TOKEN_MAXAGE
+            valueFrom:
+              secretKeyRef:
+                name: chat-app-secret
+                key: next_auth_token_maxage
+          - name: NEXTAUTH_TOKEN_UPDATEAGE
+            valueFrom:
+              secretKeyRef:
+                name: chat-app-secret
+                key: next_auth_token_updateage
