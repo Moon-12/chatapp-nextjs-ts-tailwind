@@ -42,3 +42,4 @@ next-env.d.ts
 
 /helm/templates/ingress.yml
 /helm/templates/config.yml
+/helm/templates/secret.yaml
