@@ -25,7 +25,7 @@ const AuthModal: React.FC = () => {
     email: "",
     password: "",
     confirmPassword: "",
-    name: "",
+    userName: "",
   });
   useEffect(() => {
     console.log("welcome page inside effect");
@@ -41,7 +41,7 @@ const AuthModal: React.FC = () => {
 
   // Validation
   const validate = () => {
-    if (!form.email || !form.password || (!isLogin && !form.name)) {
+    if (!form.email || !form.password || (!isLogin && !form.userName)) {
       toast.error("Please fill all required fields");
       return false;
     }
@@ -85,10 +85,12 @@ const AuthModal: React.FC = () => {
       const res = await fetch(`/chat-app/api/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: form.name,
-          email: form.email,
-          password: form.password,
+         body: JSON.stringify({
+          form: {
+            name: form.userName,
+            email: form.email,
+            password: form.password,
+          },
         }),
       });
 
@@ -141,7 +143,7 @@ const AuthModal: React.FC = () => {
               <InputField
                 label="Username"
                 name="userName"
-                value={form.name}
+                value={form.userName}
                 onChange={handleChange}
               />
             )}
