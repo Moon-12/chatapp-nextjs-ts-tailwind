@@ -87,7 +87,7 @@ const AuthModal: React.FC = () => {
         headers: { "Content-Type": "application/json" },
          body: JSON.stringify({
           form: {
-            name: form.userName,
+            name: form.name,
             email: form.email,
             password: form.password,
           },
@@ -142,7 +142,7 @@ const AuthModal: React.FC = () => {
             {!isLogin && (
               <InputField
                 label="Username"
-                name="userName"
+                name="name"
                 value={form.name}
                 onChange={handleChange}
               />
