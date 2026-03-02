@@ -25,7 +25,7 @@ const AuthModal: React.FC = () => {
     email: "",
     password: "",
     confirmPassword: "",
-    userName: "",
+    name: "",
   });
   useEffect(() => {
     console.log("welcome page inside effect");
@@ -41,7 +41,7 @@ const AuthModal: React.FC = () => {
 
   // Validation
   const validate = () => {
-    if (!form.email || !form.password || (!isLogin && !form.userName)) {
+    if (!form.email || !form.password || (!isLogin && !form.name)) {
       toast.error("Please fill all required fields");
       return false;
     }
@@ -87,7 +87,7 @@ const AuthModal: React.FC = () => {
         headers: { "Content-Type": "application/json" },
          body: JSON.stringify({
           form: {
-            name: form.userName,
+            name: form.name,
             email: form.email,
             password: form.password,
           },
@@ -142,8 +142,8 @@ const AuthModal: React.FC = () => {
             {!isLogin && (
               <InputField
                 label="Username"
-                name="userName"
-                value={form.userName}
+                name="name"
+                value={form.name}
                 onChange={handleChange}
               />
             )}
