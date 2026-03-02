@@ -82,7 +82,7 @@ const AuthModal: React.FC = () => {
     e.preventDefault();
 
     try {
-      const res = await fetch(`/api/signup`, {
+      const res = await fetch(`/chat-app/api/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
