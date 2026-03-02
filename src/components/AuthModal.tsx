@@ -25,7 +25,7 @@ const AuthModal: React.FC = () => {
     email: "",
     password: "",
     confirmPassword: "",
-    userName: "",
+    name: "",
   });
   useEffect(() => {
     console.log("welcome page inside effect");
@@ -41,7 +41,7 @@ const AuthModal: React.FC = () => {
 
   // Validation
   const validate = () => {
-    if (!form.email || !form.password || (!isLogin && !form.userName)) {
+    if (!form.email || !form.password || (!isLogin && !form.name)) {
       toast.error("Please fill all required fields");
       return false;
     }
@@ -143,7 +143,7 @@ const AuthModal: React.FC = () => {
               <InputField
                 label="Username"
                 name="userName"
-                value={form.userName}
+                value={form.name}
                 onChange={handleChange}
               />
             )}
