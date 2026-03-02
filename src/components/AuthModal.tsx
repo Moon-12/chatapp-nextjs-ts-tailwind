@@ -85,10 +85,12 @@ const AuthModal: React.FC = () => {
       const res = await fetch(`/chat-app/api/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: form.name,
-          email: form.email,
-          password: form.password,
+         body: JSON.stringify({
+          form: {
+            name: form.userName,
+            email: form.email,
+            password: form.password,
+          },
         }),
       });
 
