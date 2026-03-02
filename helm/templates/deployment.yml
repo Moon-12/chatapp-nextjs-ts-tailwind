@@ -72,3 +72,8 @@ spec:
               secretKeyRef:
                 name: chat-app-secret
                 key: next_auth_token_updateage
+          - name: SSO_API_URL
+            valueFrom:
+              secretKeyRef:
+                name: chat-app-secret
+                key: sso_api_url
